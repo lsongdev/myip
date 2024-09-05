@@ -1,0 +1,16 @@
+@import url(https://lsong.org/css/stylesheet.css);
+@import url(https://lsong.org/stylesheets/select.css);
+@import url(https://lsong.org/stylesheets/button.css);
+
+#results { margin-top: 20px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+th { background-color: #f2f2f2; }
+
+.width-full {
+    width: 100%;
+}
+
+.flex-jc-sb {
+    justify-content: space-between;
+}
