@@ -23,110 +23,108 @@
 </head>
 
 <body>
-  <div class="container">
-    <header class="header">
-      <a href="/" class="heading">
-        <img src="https://lsong.org/icon.svg" alt="logo" class="logo" width="24">
-        <h1 class="title">MyIP</h1>
-      </a>
-      <nav class="nav nav-bar">
-        <a href="//lsong.org">home</a>
-        <a href="//lsong.org/posts">blog</a>
-        <a href="//lsong.org/books">books</a>
-        <a href="//lsong.org/music">music</a>
-        <a href="//lsong.org/apps.html">apps</a>
-        <x-inbox></x-inbox>
-      </nav>
-      <hr />
-    </header>
-    <main class="content">
+  <header class="navbar">
+    <a href="/" class="heading navbar-brand">
+      <img src="https://lsong.org/icon.svg" alt="logo" class="logo" width="24">
+      <h1 class="title">MyIP</h1>
+    </a>
+    <nav>
+      <a href="//lsong.org">home</a>
+      <a href="//lsong.org/posts">blog</a>
+      <a href="//lsong.org/books">books</a>
+      <a href="//lsong.org/music">music</a>
+      <a href="//lsong.org/apps.html">apps</a>
+      <x-inbox></x-inbox>
+    </nav>
+    <hr />
+  </header>
+  <main class="content">
 
-      <section id="hello">
-        <h2>Hello 👋</h2>
-        <p class="headline">
-          Hi, I'm Liu Song, a full-stack developer with a passion for open-source software.
-          I have experience in web and mobile development, as well as a background in embedded systems and network
-          protocols.
-          I enjoy writing tech <a href="//lsong.org/posts">blogs</a> and developing <a
-            href="//lsong.org/apps.html">applications</a> in my spare time.
-          Proficient in Node.js, Golang, and server operations, I'm always eager to learn more and contribute to the
-          community.
-          Check out my GitHub <a href="https://github.com/song940">@song940</a> for some of my projects and feel free to
-          connect
-          with me to discuss ideas.
-          When I'm not coding, I enjoy listening to <a href="//lsong.org/music">music</a> and playing <a
-            href="//lsong.org/games">games</a>.
-        </p>
-      </section>
+    <section id="hello">
+      <h2>Hello 👋</h2>
+      <p class="headline">
+        Hi, I'm Liu Song, a full-stack developer with a passion for open-source software.
+        I have experience in web and mobile development, as well as a background in embedded systems and network
+        protocols.
+        I enjoy writing tech <a href="//lsong.org/posts">blogs</a> and developing <a
+          href="//lsong.org/apps.html">applications</a> in my spare time.
+        Proficient in Node.js, Golang, and server operations, I'm always eager to learn more and contribute to the
+        community.
+        Check out my GitHub <a href="https://github.com/song940">@song940</a> for some of my projects and feel free to
+        connect
+        with me to discuss ideas.
+        When I'm not coding, I enjoy listening to <a href="//lsong.org/music">music</a> and playing <a
+          href="//lsong.org/games">games</a>.
+      </p>
+    </section>
 
-      <div class="tool">
-        <h2>DNS Lookup</h2>
-        <form class="input-group width-full" id="dns">
-          <select name="type" class="select">
-            <option value="A">A</option>
-            <option value="AAAA">AAAA</option>
-          </select>
-          <input type="text" id="domainInput" placeholder="Hostname" class="input" required>
-          <button type="submit" class="button" id="resolveDomainBtn">Lookup</button>
-        </form>
+    <div class="tool">
+      <h2>DNS Lookup</h2>
+      <form class="input-group width-full" id="dns">
+        <select name="type" class="select">
+          <option value="A">A</option>
+          <option value="AAAA">AAAA</option>
+        </select>
+        <input type="text" id="domainInput" placeholder="Hostname" class="input" required>
+        <button type="submit" class="button" id="resolveDomainBtn">Lookup</button>
+      </form>
+    </div>
+
+    <div class="tool">
+      <h2>My IP</h2>
+      <div class="input-group width-full">
+        <select id="ipSource" class="select width-full">
+          <option value="ipify">ipify.org</option>
+          <option value="httpbin">httpbin.org</option>
+        </select>
+        <button id="checkIPv4Btn" class="button button-primary">IPv4</button>
+        <button id="checkIPv6Btn" class="button button-primary">IPv6</button>
       </div>
+    </div>
 
-      <div class="tool">
-        <h2>My IP</h2>
-        <div class="input-group width-full">
-          <select id="ipSource" class="select width-full">
-            <option value="ipify">ipify.org</option>
-            <option value="httpbin">httpbin.org</option>
-          </select>
-          <button id="checkIPv4Btn" class="button button-primary">IPv4</button>
-          <button id="checkIPv6Btn" class="button button-primary">IPv6</button>
+    <div class="tool">
+      <h2>Geolocation</h2>
+      <form class="input-group width-full" id="geolocation">
+        <select id="geoSource" class="select">
+          <option value="ipapi">ipapi.co</option>
+          <option value="ipinfo">ipinfo.io</option>
+        </select>
+        <input type="text" id="ipInput" placeholder="IP address" class="input" required>
+        <button type="submit" class="button">Geolocate</button>
+      </form>
+      <div id="results"></div>
+    </div>
+
+    <div class="tool">
+      <div class="flex flex-center flex-jc-sb">
+        <h2>Website Access Speed Test </h2>
+        <div>
+          <button id="testSpeedBtn" class="button button-primary">Test</button>
         </div>
       </div>
-
-      <div class="tool">
-        <h2>Geolocation</h2>
-        <form class="input-group width-full" id="geolocation">
-          <select id="geoSource" class="select">
-            <option value="ipapi">ipapi.co</option>
-            <option value="ipinfo">ipinfo.io</option>
-          </select>
-          <input type="text" id="ipInput" placeholder="IP address" class="input" required>
-          <button type="submit" class="button">Geolocate</button>
-        </form>
-        <div id="results"></div>
-      </div>
-
-      <div class="tool">
-        <div class="flex flex-center flex-jc-sb">
-          <h2>Website Access Speed Test </h2>
-          <div>
-            <button id="testSpeedBtn" class="button button-primary">Test</button>
-          </div>
-        </div>
-        <div id="speedtest_results"></div>
-      </div>
+      <div id="speedtest_results"></div>
+    </div>
 
 
 
-      <hr />
-      <section id="subscribe" class="subscribe">
-        <h2>Subscribe</h2>
-        <p>Join our occasional newsletter for product launches, availability, job openings, and news:</p>
-        <form action="https://formspree.io/song940@gmail.com" method="post" class="input-group width-full">
-          <input class="input" type="email" id="email" name="email" required placeholder="email address">
-          <button type="submit" class="button">Submit</button>
-        </form>
-      </section>
-    </main>
-    <footer class="footer">
-      <hr />
-      Liu Song
-      <address>
-        <a href="mailto:hi@lsong.org">hi@lsong.org</a>
-      </address>
-      <a href="https://lsong.org">https://lsong.org</a>
-    </footer>
-  </div>
+    <hr />
+    <section id="subscribe" class="subscribe">
+      <h2>Subscribe</h2>
+      <p>Join our occasional newsletter for product launches, availability, job openings, and news:</p>
+      <form action="https://formspree.io/song940@gmail.com" method="post" class="input-group width-full">
+        <input class="input" type="email" id="email" name="email" required placeholder="email address">
+        <button type="submit" class="button">Submit</button>
+      </form>
+    </section>
+  </main>
+  <footer class="footer">
+    <hr />
+    Liu Song
+    <address>
+      <a href="mailto:hi@lsong.org">hi@lsong.org</a>
+    </address>
+    <a href="https://lsong.org">https://lsong.org</a>
+  </footer>
 </body>
 
 </html>
