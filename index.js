@@ -25,9 +25,9 @@ const displayGeoResults = (geoData) => {
     `)
     .join('');
   const html = `
-    <table>
-      <tr><th>Information</th><th>Value</th></tr>
-      ${tableRows}
+    <table class="table table-compact">
+      <thead><tr><th>Information</th><th>Value</th></tr></thead>
+      <tbody>${tableRows}</tbody>
     </table>
   `;
 
@@ -109,9 +109,9 @@ const initializeSpeedTestResults = () => {
     .join('');
 
   const html = `
-    <table>
-      <tr><th>Website</th><th>Latency</th></tr>
-      ${tableBody}
+    <table class="table table-compact">
+      <thead><tr><th>Website</th><th>Latency</th></tr></thead>
+      <tbody>${tableBody}</tbody>
     </table>
     <p>Note: Latency values are for reference only. Actual values may be lower.</p>
   `;

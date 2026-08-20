@@ -1,42 +1,56 @@
 @import url(https://lsong.org/css/stylesheet.css?v=6);
 
-:root {
-  --myip-accent: var(--color-primary);
-  --myip-accent-soft: color-mix(in srgb, var(--myip-accent) 10%, var(--color-surface));
+.tool-grid {
+  display: grid;
+  padding-block: clamp(56px, 8vw, 88px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
-body { min-width: 320px; color: var(--color-text); background: var(--color-canvas); }
-.content { padding-block: clamp(48px, 8vw, 96px) clamp(72px, 10vw, 128px); }
-#hello { max-width: 720px; padding-bottom: 52px; }
-#hello h2 { margin-bottom: 14px; font-size: clamp(34px, 5vw, 56px); letter-spacing: -0.06em; }
-#hello .headline { margin: 0; color: var(--color-text-muted); font-size: clamp(16px, 2vw, 19px); line-height: 1.7; }
-#hello a { color: var(--myip-accent); }
-.tool { padding: clamp(20px, 3vw, 28px); margin: 14px 0; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: 0 12px 30px rgb(17 17 19 / 4%); transition: border-color var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
-.tool:hover, .tool:focus-within { border-color: color-mix(in srgb, var(--myip-accent) 42%, var(--color-border)); box-shadow: 0 16px 36px rgb(17 17 19 / 7%); transform: translateY(-1px); }
-.tool h2 { margin: 0 0 16px; font-size: clamp(19px, 2.4vw, 26px); letter-spacing: -0.035em; }
-.tool .input-group, .tool .input, .tool .select { min-width: 0; }
-#results, #speedtest_results { padding-top: 18px; }
-#results table, #speedtest_results table { width: 100%; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-md); border-collapse: separate; border-spacing: 0; font-size: 13px; }
-#results th, #results td, #speedtest_results th, #speedtest_results td { padding: 11px 13px; border: 0; border-bottom: 1px solid var(--color-border); text-align: left; }
-#results tr:last-child td, #speedtest_results tr:last-child td { border-bottom: 0; }
-#results th, #speedtest_results th { color: var(--color-text-muted); background: var(--myip-accent-soft); font-weight: 650; }
-#speedtest_results p { color: var(--color-text-muted); font-size: 12px; }
-#subscribe { padding: clamp(24px, 4vw, 36px) 0; margin-top: 42px; border-top: 1px solid var(--color-border); }
-#subscribe h2 { margin: 0 0 8px; font-size: clamp(24px, 3vw, 34px); letter-spacing: -0.04em; }
-#subscribe p { max-width: 560px; margin: 0 0 18px; color: var(--color-text-muted); }
-#subscribe .input-group { max-width: 620px; }
-@media (min-width: 760px) {
-  .content { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
-  #hello, #subscribe, .tool:nth-of-type(3), .tool:nth-of-type(4) { grid-column: 1 / -1; }
+.tool-grid > .card {
+  min-width: 0;
+  margin: 0;
 }
 
-@media (max-width: 640px) {
-  .tool .input-group { flex-wrap: wrap; }
-  .tool .input-group > .select, .tool .input-group > .input { flex: 1 1 100%; }
-  .tool .input-group > .button { flex: 1 1 auto; }
+.tool-heading {
+  margin-bottom: 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .tool { box-shadow: 0 12px 30px rgb(0 0 0 / 18%); }
-  .tool:hover, .tool:focus-within { box-shadow: 0 16px 36px rgb(0 0 0 / 28%); }
+.tool-heading h2 {
+  margin: 8px 0 0;
+  font-size: clamp(21px, 3vw, 28px);
+  letter-spacing: -0.04em;
+}
+
+.tool :is(.input-group, .input, .select) {
+  min-width: 0;
+}
+
+#results,
+#speedtest_results {
+  padding-top: 18px;
+  overflow-x: auto;
+}
+
+#speedtest_results p {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+@media (max-width: 720px) {
+  .tool-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tool .input-group {
+    flex-wrap: wrap;
+  }
+
+  .tool .input-group > :is(.select, .input) {
+    flex: 1 1 100%;
+  }
+
+  .tool .input-group > .button {
+    flex: 1 1 auto;
+  }
 }

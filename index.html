@@ -18,8 +18,8 @@
   <link rel="icon" type="image/svg+xml" href="https://lsong.org/icon.svg">
   <link rel="apple-touch-icon" sizes="128x128" type="image/png" href="https://lsong.org/icon-x128.png">
   <link rel="apple-touch-icon" sizes="512x512" type="image/png" href="https://lsong.org/icon-x512.png">
-  <link rel="stylesheet" href="index.css?v=2">
-  <script type="module" src="index.js"></script>
+  <link rel="stylesheet" href="index.css?v=3">
+  <script type="module" src="index.js?v=2"></script>
 </head>
 
 <body>
@@ -37,30 +37,34 @@
     </nav>
     <hr />
   </header>
-  <main class="content">
-
-    <section id="hello">
-      <h2>Hello 👋</h2>
-      <p class="headline">
-        A small toolkit for checking your IP, looking up DNS records, exploring geolocation, and testing connection
-        speed.
-      </p>
+  <main class="content myip-page">
+    <section class="site-hero" aria-labelledby="myip-title">
+      <p class="eyebrow">Network utility</p>
+      <h2 class="site-hero-title" id="myip-title">Know your<br><span>connection.</span></h2>
+      <p class="site-hero-copy">Check public IP addresses, resolve DNS records, inspect geolocation, and compare connection latency.</p>
     </section>
 
-    <div class="tool">
-      <h2>DNS Lookup</h2>
-      <form class="input-group width-full" id="dns">
-        <select name="type" class="select">
-          <option value="A">A</option>
-          <option value="AAAA">AAAA</option>
-        </select>
-        <input type="text" id="domainInput" placeholder="Hostname" class="input" required>
-        <button type="submit" class="button" id="resolveDomainBtn">Lookup</button>
-      </form>
-    </div>
+    <section class="tool-grid" aria-label="Network tools">
+      <article class="tool card">
+        <header class="tool-heading">
+          <p class="eyebrow">Resolve</p>
+          <h2>DNS Lookup</h2>
+        </header>
+        <form class="input-group width-full" id="dns">
+          <select name="type" class="select">
+            <option value="A">A</option>
+            <option value="AAAA">AAAA</option>
+          </select>
+          <input type="text" id="domainInput" placeholder="Hostname" class="input" required>
+          <button type="submit" class="button" id="resolveDomainBtn">Lookup</button>
+        </form>
+      </article>
 
-    <div class="tool">
-      <h2>My IP</h2>
+    <article class="tool card">
+      <header class="tool-heading">
+        <p class="eyebrow">Address</p>
+        <h2>My IP</h2>
+      </header>
       <div class="input-group width-full">
         <select id="ipSource" class="select width-full">
           <option value="ipify">ipify.org</option>
@@ -69,10 +73,13 @@
         <button id="checkIPv4Btn" class="button button-primary">IPv4</button>
         <button id="checkIPv6Btn" class="button button-primary">IPv6</button>
       </div>
-    </div>
+      </article>
 
-    <div class="tool">
-      <h2>Geolocation</h2>
+    <article class="tool card">
+      <header class="tool-heading">
+        <p class="eyebrow">Location</p>
+        <h2>Geolocation</h2>
+      </header>
       <form class="input-group width-full" id="geolocation">
         <select id="geoSource" class="select">
           <option value="ipapi">ipapi.co</option>
@@ -82,26 +89,28 @@
         <button type="submit" class="button">Geolocate</button>
       </form>
       <div id="results"></div>
-    </div>
+      </article>
 
-    <div class="tool">
-      <div class="flex flex-center flex-jc-sb">
-        <h2>Website Access Speed Test </h2>
+    <article class="tool card">
+      <div class="tool-heading flex flex-center flex-jc-sb">
+        <div>
+          <p class="eyebrow">Latency</p>
+          <h2>Website Access Speed Test</h2>
+        </div>
         <div>
           <button id="testSpeedBtn" class="button button-primary">Test</button>
         </div>
       </div>
       <div id="speedtest_results"></div>
-    </div>
-
-
+      </article>
+    </section>
 
     <hr />
-    <section id="subscribe" class="subscribe">
-      <h2>Subscribe</h2>
+    <section id="subscribe" class="subscribe" aria-labelledby="subscribe-title">
+      <h2 id="subscribe-title">Subscribe</h2>
       <p>Join our occasional newsletter for product launches, availability, job openings, and news:</p>
-      <form action="https://formspree.io/song940@gmail.com" method="post" class="input-group width-full">
-        <input class="input" type="email" id="email" name="email" required placeholder="email address">
+      <form action="https://formspree.io/song940@gmail.com" method="post" class="form form-row">
+        <input class="input input-block" type="email" id="email" name="email" required placeholder="email address">
         <button type="submit" class="button">Submit</button>
       </form>
     </section>
