@@ -121,14 +121,6 @@ select {
   display: block;
   flex: none;
 }
-.brand-domain {
-  display: block;
-  margin-top: 4px;
-  font-size: 11px;
-  color: var(--muted);
-  font-weight: 400;
-  letter-spacing: 0;
-}
 .site-header nav {
   display: flex;
   align-items: center;
@@ -170,17 +162,6 @@ h1 {
   font-size: 13px;
   margin-top: 7px;
 }
-.server-control {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-.server-control label {
-  font-size: 12px;
-  color: var(--muted);
-  white-space: nowrap;
-}
 input,
 select {
   height: 44px;
@@ -198,9 +179,6 @@ select {
   text-overflow: ellipsis;
   font-size: 13px;
 }
-#target {
-  width: 246px;
-}
 .run-controls {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -214,7 +192,7 @@ select {
   background: var(--surface);
 }
 .control-card > span,
-.control-card label {
+.control-card .control-label {
   display: block;
   font-size: 12px;
   color: var(--muted);
@@ -243,17 +221,6 @@ select {
 #start-icon {
   font-size: 13px;
 }
-.connection-control {
-  padding-bottom: 14px;
-}
-.connection-control select {
-  margin-top: 6px;
-  width: 100%;
-  height: 36px;
-  border: 0;
-  background-color: var(--soft);
-  font-size: 12px;
-}
 .stat p {
   display: flex;
   align-items: baseline;
@@ -277,17 +244,9 @@ select {
   color: var(--muted);
   font-size: 12px;
 }
-.speed-workspace {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
 .direction {
   --chart: var(--download);
   min-width: 0;
-  background: var(--surface);
-  border-radius: 19px;
-  padding: 26px 28px 24px;
 }
 #upload-panel {
   --chart: var(--upload);
@@ -320,10 +279,10 @@ select {
   display: flex;
   align-items: baseline;
   gap: 10px;
-  margin-top: 25px;
+  margin-top: 12px;
 }
 .speed-value strong {
-  font-size: clamp(50px, 5vw, 66px);
+  font-size: clamp(40px, 4vw, 54px);
   font-weight: 450;
   line-height: 1.1;
   letter-spacing: -2.8px;
@@ -336,8 +295,8 @@ select {
 .trend {
   display: block;
   width: 100%;
-  height: 145px;
-  margin: 22px 0 24px;
+  height: 180px;
+  margin: 0;
   overflow: visible;
 }
 .chart-grid {
@@ -349,14 +308,14 @@ select {
 }
 .chart-line {
   fill: none;
-  stroke: var(--chart);
+  stroke: var(--download);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
 .chart-area {
-  fill: var(--chart);
+  fill: var(--download);
   opacity: 0.075;
 }
 .direction-meta {
@@ -656,13 +615,6 @@ dd {
   h1 {
     font-size: 24px;
   }
-  .server-control {
-    justify-content: space-between;
-  }
-  #target {
-    width: 246px;
-    max-width: calc(100% - 76px);
-  }
   .run-controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
@@ -683,13 +635,6 @@ dd {
     font-size: 15px;
     gap: 8px;
   }
-  .connection-control select {
-    padding-left: 9px;
-    padding-right: 26px;
-    background-position: right 6px center;
-    font-size: 16px;
-  }
-  .server-control select,
   form select {
     font-size: 16px;
   }
@@ -699,23 +644,15 @@ dd {
   .test-feedback {
     margin-block: 13px 17px;
   }
-  .speed-workspace {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
-  }
-  .direction {
-    padding: 23px 24px;
-    border-radius: 17px;
-  }
   .speed-value {
-    margin-top: 20px;
+    margin-top: 12px;
+    gap: 5px;
   }
   .speed-value strong {
-    font-size: 56px;
+    font-size: 38px;
   }
   .trend {
-    height: 126px;
-    margin-block: 22px;
+    height: 124px;
   }
   .direction-meta {
     padding-top: 17px;
@@ -781,7 +718,7 @@ dd {
   .connection-control {
     padding-inline: 10px;
   }
-  .direction,
+  .throughput-panel,
   .tool-panel,
   .connection-panel {
     padding-inline: 20px;
@@ -797,7 +734,7 @@ dd {
 }
 @media (forced-colors: active) {
   .control-card,
-  .direction,
+  .throughput-panel,
   .connection-panel,
   .tool-panel {
     outline: 1px solid CanvasText;
@@ -810,5 +747,205 @@ dd {
   }
   .chart-grid {
     stroke: GrayText;
+  }
+}
+
+/* One shared plot keeps both directions in view on a phone. */
+.throughput-panel {
+  padding: 26px 28px 24px;
+  background: var(--surface);
+  border-radius: 19px;
+}
+.speed-readouts,
+.transfer-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 40px;
+}
+.chart-figure {
+  margin: 24px 0 18px;
+}
+.chart-plot {
+  position: relative;
+}
+.chart-axis {
+  fill: none;
+  stroke: var(--muted);
+  stroke-opacity: 0.5;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.axis-zero {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  padding-left: 4px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1;
+}
+.upload-plot.chart-line {
+  stroke: var(--upload);
+}
+.upload-plot.chart-area {
+  fill: var(--upload);
+}
+.chart-time {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.chart-figure figcaption {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 12px;
+  text-align: center;
+}
+.stream-toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 2px;
+}
+.mode-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+.mode-label.selected {
+  color: var(--ink);
+  font-weight: 550;
+}
+.stream-switch {
+  --thumb-shift: 26px;
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  width: 56px;
+  height: 44px;
+  padding: 0 3px;
+  border: 0;
+  background: none;
+}
+.stream-switch::before {
+  content: '';
+  position: absolute;
+  inset: 7px 0;
+  border-radius: 999px;
+  background: var(--soft);
+}
+.switch-thumb {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--start-bg);
+  color: var(--start-ink);
+  font-size: 20px;
+  line-height: 1;
+}
+.single-symbol {
+  display: none;
+  font-size: 13px;
+}
+.stream-switch[aria-checked='true'] .switch-thumb {
+  transform: translateX(var(--thumb-shift));
+}
+.stream-switch[aria-checked='true'] .single-symbol {
+  display: block;
+}
+.stream-switch[aria-checked='true'] .multi-symbol {
+  display: none;
+}
+@media (max-width: 640px) {
+  .throughput-panel {
+    padding: 23px 22px 21px;
+  }
+  .speed-readouts,
+  .transfer-details {
+    gap: 22px;
+  }
+  .direction-title {
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .direction h2 {
+    font-size: 13px;
+  }
+  .phase-tag {
+    font-size: 8px;
+  }
+  .speed-value > span {
+    font-size: 11px;
+  }
+  .chart-figure {
+    margin: 16px 0 10px;
+  }
+  .chart-figure figcaption {
+    font-size: 10px;
+  }
+  .direction-meta {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+    font-size: 10px;
+    padding-top: 14px;
+  }
+  .direction-meta > span {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px;
+  }
+  .direction-meta strong {
+    font-size: 12px;
+  }
+}
+@media (max-width: 360px) {
+  .stream-toggle {
+    gap: 6px;
+  }
+  .mode-label {
+    font-size: 11px;
+  }
+  .stream-switch {
+    --thumb-shift: 20px;
+    width: 48px;
+  }
+  .switch-thumb {
+    width: 22px;
+    height: 22px;
+  }
+  .speed-value strong {
+    font-size: 32px;
+    letter-spacing: -1.5px;
+  }
+  .throughput-panel {
+    padding-inline: 20px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .switch-thumb {
+    transition: transform 0.18s ease;
+  }
+}
+@media (forced-colors: active) {
+  .stream-switch::before {
+    border: 1px solid ButtonText;
+  }
+  .switch-thumb {
+    background: ButtonText;
+    color: ButtonFace;
+  }
+  .chart-axis {
+    stroke: CanvasText;
   }
 }
