@@ -1,132 +1,332 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A little clarity for your connection. Check your IP, measure download and upload speed, and look up DNS records."
+    />
+    <meta name="theme-color" content="#f6f5f1" />
+    <meta name="author" content="Lsong" />
+    <title>MyIP — Lsong</title>
+    <link rel="icon" type="image/svg+xml" href="https://lsong.org/icon.svg" />
+    <link rel="apple-touch-icon" href="https://lsong.org/icon-x128.png" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="index.css?v=4" />
+    <script type="module" src="index.js?v=4"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header shell">
+      <a class="brand" href="https://lsong.org"
+        ><img
+          src="https://lsong.org/icon.svg"
+          width="26"
+          height="26"
+          alt=""
+        /><span
+          >Lsong<span class="brand-slash"> / </span><strong>MyIP</strong></span
+        ></a
+      >
+      <nav aria-label="Main navigation">
+        <a href="https://lsong.org/start"
+          >All apps <span aria-hidden="true">↗</span></a
+        ><button
+          type="button"
+          id="theme"
+          class="text-button"
+          aria-label="Change appearance"
+        >
+          System theme
+        </button>
+      </nav>
+    </header>
+    <main id="main" class="shell">
+      <section class="intro" aria-labelledby="title">
+        <div>
+          <p class="eyebrow">
+            <span class="status-dot" aria-hidden="true"></span> A SMALL NETWORK
+            UTILITY
+          </p>
+          <h1 id="title">Know your connection<span class="accent">.</span></h1>
+          <p class="intro-copy">
+            Your address, your speed, and everything in between.
+          </p>
+        </div>
+        <button
+          type="button"
+          class="text-button privacy-button"
+          id="privacy"
+          aria-pressed="false"
+        >
+          Hide IP details <span aria-hidden="true">◉</span>
+        </button>
+      </section>
 
-<head>
-  <title>MyIP</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="description" content="homepage, blog, music and etc.">
-  <meta name="author" content="Lsong">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="MyIP">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:creator" content="@song940">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/svg+xml" href="https://lsong.org/icon.svg">
-  <link rel="apple-touch-icon" sizes="128x128" type="image/png" href="https://lsong.org/icon-x128.png">
-  <link rel="apple-touch-icon" sizes="512x512" type="image/png" href="https://lsong.org/icon-x512.png">
-  <link rel="stylesheet" href="index.css?v=3">
-  <script type="module" src="index.js?v=2"></script>
-</head>
+      <section class="connection-strip" aria-label="Your connection">
+        <div class="address-info">
+          <div class="strip-label">
+            PUBLIC IPv4
+            <button
+              type="button"
+              id="refresh-ip"
+              class="icon-button"
+              aria-label="Refresh IP addresses"
+            >
+              ↻
+            </button>
+          </div>
+          <button
+            type="button"
+            id="ipv4"
+            class="ip-value"
+            aria-label="Copy IPv4 address"
+            disabled
+          >
+            Checking…
+          </button>
+        </div>
+        <div class="address-info">
+          <div class="strip-label">PUBLIC IPv6</div>
+          <button
+            type="button"
+            id="ipv6"
+            class="ip-value"
+            aria-label="Copy IPv6 address"
+            disabled
+          >
+            Checking…
+          </button>
+        </div>
+        <div>
+          <p class="strip-label">LOCATION / NETWORK</p>
+          <p id="connection-location" class="location-value">
+            Looking up your network…
+          </p>
+        </div>
+      </section>
+      <p class="visually-hidden" id="announcement" role="status"></p>
 
-<body>
-  <header class="navbar site-header">
-    <a href="/" class="navbar-brand" aria-label="Lsong’s MyIP home">
-      <img class="navbar-brand-mark" src="https://lsong.org/assets/web/icon.png?v=2" alt="" aria-hidden="true" referrerpolicy="no-referrer">
-      <h1 class="title" prefix="Lsong’s ">MyIP</h1>
-    </a>
-    <nav aria-label="Main navigation">
-      <a href="https://lsong.org">Home</a>
-      <a href="https://lsong.org/posts">Writing</a>
-      <a href="https://lsong.org/books">Books</a>
-      <a href="https://lsong.org/music">Music</a>
-      <a href="https://lsong.org/start">Apps</a>
-    </nav>
-    <hr />
-  </header>
-  <main class="content myip-page">
-    <section class="site-hero" aria-labelledby="myip-title">
-      <p class="eyebrow">Network utility</p>
-      <h2 class="site-hero-title" id="myip-title">Know your<br><span>connection.</span></h2>
-      <p class="site-hero-copy">Check public IP addresses, resolve DNS records, inspect geolocation, and compare connection latency.</p>
-    </section>
-
-    <section class="tool-grid" aria-label="Network tools">
-      <article class="tool card">
-        <header class="tool-heading">
-          <p class="eyebrow">Resolve</p>
-          <h2>DNS Lookup</h2>
+      <section class="speed-panel" aria-labelledby="speed-title">
+        <header class="panel-header">
+          <div>
+            <p class="eyebrow">01 / MEASURE</p>
+            <h2 id="speed-title">Internet speed</h2>
+          </div>
+          <div class="speed-options">
+            <label class="visually-hidden" for="target">Test server</label
+            ><select id="target"></select
+            ><label class="visually-hidden" for="streams"
+              >Concurrent transfers</label
+            ><select id="streams">
+              <option value="3">Parallel streams</option>
+              <option value="1">Single stream</option>
+            </select>
+          </div>
         </header>
-        <form class="input-group width-full" id="dns">
-          <select name="type" class="select">
-            <option value="A">A</option>
-            <option value="AAAA">AAAA</option>
-          </select>
-          <input type="text" id="domainInput" placeholder="Hostname" class="input" required>
-          <button type="submit" class="button" id="resolveDomainBtn">Lookup</button>
-        </form>
-      </article>
-
-    <article class="tool card">
-      <header class="tool-heading">
-        <p class="eyebrow">Address</p>
-        <h2>My IP</h2>
-      </header>
-      <div class="input-group width-full">
-        <select id="ipSource" class="select width-full">
-          <option value="ipify">ipify.org</option>
-          <option value="httpbin">httpbin.org</option>
-        </select>
-        <button id="checkIPv4Btn" class="button button-primary">IPv4</button>
-        <button id="checkIPv6Btn" class="button button-primary">IPv6</button>
-      </div>
-      </article>
-
-    <article class="tool card">
-      <header class="tool-heading">
-        <p class="eyebrow">Location</p>
-        <h2>Geolocation</h2>
-      </header>
-      <form class="input-group width-full" id="geolocation">
-        <select id="geoSource" class="select">
-          <option value="ipapi">ipapi.co</option>
-          <option value="ipinfo">ipinfo.io</option>
-        </select>
-        <input type="text" id="ipInput" placeholder="IP address" class="input" required>
-        <button type="submit" class="button">Geolocate</button>
-      </form>
-      <div id="results"></div>
-      </article>
-
-    <article class="tool card">
-      <div class="tool-heading flex flex-center flex-jc-sb">
-        <div>
-          <p class="eyebrow">Latency</p>
-          <h2>Website Access Speed Test</h2>
+        <div class="speed-workspace">
+          <div class="run-controls">
+            <button type="button" id="start" class="start-button">
+              <span id="start-icon" aria-hidden="true">↗</span
+              ><span id="start-label">Start test</span>
+            </button>
+            <p id="test-status" role="status">Ready when you are.</p>
+            <div class="latency-stats">
+              <div>
+                <span>Idle latency</span>
+                <p><strong id="latency">—</strong> <small>ms</small></p>
+              </div>
+              <div>
+                <span>Jitter</span>
+                <p><strong id="jitter">—</strong> <small>ms</small></p>
+              </div>
+            </div>
+          </div>
+          <div class="direction" id="download-panel">
+            <div class="direction-title">
+              <h3><span aria-hidden="true">↓</span> Download</h3>
+              <span class="phase-tag" id="download-state">WAITING</span>
+            </div>
+            <p class="speed-value">
+              <strong id="download-speed">—</strong><span>Mbps</span>
+            </p>
+            <svg
+              class="trend"
+              viewBox="0 0 480 112"
+              preserveAspectRatio="none"
+              role="img"
+              aria-label="Download speed over time"
+            >
+              <path
+                class="chart-grid"
+                d="M0 28H480 M0 56H480 M0 84H480 M0 111H480"
+              />
+              <path class="chart-area" id="download-area" />
+              <path class="chart-line" id="download-line" />
+            </svg>
+            <div class="direction-meta">
+              <span
+                >Loaded latency
+                <strong id="download-latency">— ms</strong></span
+              ><span id="download-bytes">0 B</span>
+            </div>
+          </div>
+          <div class="direction" id="upload-panel">
+            <div class="direction-title">
+              <h3><span aria-hidden="true">↑</span> Upload</h3>
+              <span class="phase-tag" id="upload-state">WAITING</span>
+            </div>
+            <p class="speed-value">
+              <strong id="upload-speed">—</strong><span>Mbps</span>
+            </p>
+            <svg
+              class="trend"
+              viewBox="0 0 480 112"
+              preserveAspectRatio="none"
+              role="img"
+              aria-label="Upload speed over time"
+            >
+              <path
+                class="chart-grid"
+                d="M0 28H480 M0 56H480 M0 84H480 M0 111H480"
+              />
+              <path class="chart-area" id="upload-area" />
+              <path class="chart-line" id="upload-line" />
+            </svg>
+            <div class="direction-meta">
+              <span
+                >Loaded latency <strong id="upload-latency">— ms</strong></span
+              ><span id="upload-bytes">0 B</span>
+            </div>
+          </div>
         </div>
-        <div>
-          <button id="testSpeedBtn" class="button button-primary">Test</button>
-        </div>
+        <footer class="panel-footer">
+          <p>
+            <span class="status-dot" aria-hidden="true"></span> Tests your
+            connection to the selected server. Uses real download &amp; upload
+            data.
+          </p>
+          <button type="button" id="copy-result" class="text-button" disabled>
+            Copy results ↗
+          </button>
+        </footer>
+      </section>
+
+      <div class="tools-grid">
+        <section class="tool-panel" aria-labelledby="dns-title">
+          <header class="panel-header">
+            <div>
+              <p class="eyebrow">02 / RESOLVE</p>
+              <h2 id="dns-title">DNS lookup</h2>
+            </div>
+            <span class="tool-symbol" aria-hidden="true">⌘</span>
+          </header>
+          <p class="tool-copy">Find the records behind a hostname.</p>
+          <form id="dns-form">
+            <label class="visually-hidden" for="hostname">Hostname</label
+            ><input
+              id="hostname"
+              name="hostname"
+              placeholder="lsong.org"
+              required
+              autocomplete="off"
+              spellcheck="false"
+            /><label class="visually-hidden" for="record-type"
+              >Record type</label
+            ><select id="record-type" name="type">
+              <option>A</option>
+              <option>AAAA</option>
+              <option>CNAME</option>
+              <option>MX</option>
+              <option>TXT</option>
+              <option>NS</option>
+              <option>SOA</option>
+              <option>CAA</option></select
+            ><button type="submit" class="action-button">
+              Look up <span aria-hidden="true">↗</span>
+            </button>
+          </form>
+          <p class="result-status" id="dns-status" role="status">
+            Queries via Google Public DNS.
+          </p>
+          <div id="dns-results" class="results"></div>
+        </section>
+        <section class="tool-panel" aria-labelledby="geo-title">
+          <header class="panel-header">
+            <div>
+              <p class="eyebrow">03 / LOCATE</p>
+              <h2 id="geo-title">IP location</h2>
+            </div>
+            <span class="tool-symbol" aria-hidden="true">◎</span>
+          </header>
+          <p class="tool-copy">Put a public address on the map.</p>
+          <form id="geo-form">
+            <label class="visually-hidden" for="ip-address">IP address</label
+            ><input
+              id="ip-address"
+              name="ip"
+              placeholder="IPv4 or IPv6 address"
+              required
+              autocomplete="off"
+              spellcheck="false"
+            /><label class="visually-hidden" for="geo-provider"
+              >Location provider</label
+            ><select id="geo-provider">
+              <option value="ipapi">ipapi.co</option>
+              <option value="ipinfo">ipinfo.io</option></select
+            ><button type="submit" class="action-button">
+              Locate <span aria-hidden="true">↗</span>
+            </button>
+          </form>
+          <p class="result-status" id="geo-status" role="status">
+            Approximate location from public IP data.
+          </p>
+          <div id="geo-results" class="results private-detail"></div>
+        </section>
       </div>
-      <div id="speedtest_results"></div>
-      </article>
-    </section>
-
-    <hr />
-    <section id="subscribe" class="subscribe" aria-labelledby="subscribe-title">
-      <h2 id="subscribe-title">Subscribe</h2>
-      <p>Join our occasional newsletter for product launches, availability, job openings, and news:</p>
-      <form action="https://formspree.io/song940@gmail.com" method="post" class="form form-row">
-        <input class="input input-block" type="email" id="email" name="email" required placeholder="email address">
-        <button type="submit" class="button">Submit</button>
-      </form>
-    </section>
-  </main>
-  <footer class="site-footer footer">
-    <a class="navbar-brand" href="https://lsong.org">
-      <img class="navbar-brand-mark" src="https://lsong.org/assets/web/icon.png?v=2" alt="" aria-hidden="true" referrerpolicy="no-referrer">
-      <span>Lsong</span>
-    </a>
-    <p>Independent software, made with care.</p>
-    <nav aria-label="Footer navigation">
-      <a href="mailto:hi@lsong.org">Email</a>
-      <a href="https://lsong.org/terms.html">Terms</a>
-      <a href="https://lsong.org/privacy.html">Privacy</a>
-    </nav>
-  </footer>
-</body>
-
+      <details class="about">
+        <summary>
+          About these measurements <span aria-hidden="true">+</span>
+        </summary>
+        <div>
+          <p>
+            Speed is measured in megabits per second (Mbps). The test warms up
+            each transfer, then samples the sustained rate until it stabilizes
+            or reaches 12 seconds per direction. Parallel mode uses three
+            concurrent transfers; your browser may share an HTTP connection
+            between them.
+          </p>
+          <p>
+            Latency is the median HTTP response time after an initial warm-up
+            request. Jitter is the average change between consecutive
+            measurements. Loaded latency is measured while transferring data.
+            These are browser measurements to the selected server, and can be
+            affected by Wi-Fi, VPNs, proxies, and server capacity.
+          </p>
+          <p>
+            IP addresses are checked with ipify, with icanhazip as a fallback.
+            IPv6 is checked independently and may be unavailable on your
+            network. DNS queries go to Google Public DNS. Location queries go to
+            the provider you select. “Hide IP details” masks addresses and
+            locations on this page, including copied speed results. No test
+            history is saved.
+          </p>
+        </div>
+      </details>
+    </main>
+    <footer class="site-footer shell">
+      <p>A little clarity for your connection.</p>
+      <nav aria-label="Footer">
+        <a href="https://lsong.org">Made by Lsong ↗</a
+        ><a href="https://github.com/lsongdev/myip">Source</a
+        ><a href="https://github.com/SukkaW/speed.skk.moe">Inspired by Sukka</a>
+      </nav>
+    </footer>
+    <noscript
+      ><p class="shell">
+        Enable JavaScript to check your connection and use these network tools.
+      </p></noscript
+    >
+  </body>
 </html>
