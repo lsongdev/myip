@@ -1,22 +1,17 @@
 {
-  "name": "MyIP — Lsong",
+  "name": "MyIP \u2014 Lsong",
   "short_name": "MyIP",
   "description": "IP addresses, internet speed, DNS and network diagnostics.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "theme_color": "#f6f5f1",
-  "background_color": "#f6f5f1",
+  "theme_color": "#f5f6f8",
+  "background_color": "#f5f6f8",
   "icons": [
     {
-      "src": "https://lsong.org/icon-x128.png",
-      "sizes": "128x128",
-      "type": "image/png"
-    },
-    {
-      "src": "https://lsong.org/icon-x512.png",
-      "sizes": "512x512",
+      "src": "./assets/icon.png",
+      "sizes": "192x192",
       "type": "image/png"
     }
   ],

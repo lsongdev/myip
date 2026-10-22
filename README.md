@@ -9,7 +9,7 @@ npm test
 
 ## Architecture
 
-- `index.html` / `index.css`: semantic page and responsive light/dark presentation, retaining the site's shared stylesheet.
+- `index.html` / `index.css`: semantic page and responsive light/dark presentation. Styles are self-contained so the homepage's global header, heading and form rules cannot affect tool layouts; the logo uses a local copy of the homepage's actual `/assets/web/icon.png` asset, avoiding cross-origin image loading failures.
 - `index.js`: DOM events, rendering, request ownership, cancellation and ephemeral UI state.
 - `lib/speedtest.js`: measurement lifecycle and immutable progress snapshots. Its context-aware API is `runSpeedtest({ transport, streams, signal, onUpdate })`. No DOM or vendor endpoints.
 - `lib/statistics.js`: pure latency, jitter and throughput calculations.

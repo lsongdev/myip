@@ -26,7 +26,7 @@ try {
 function applyTheme() {
   if (theme === 'system') delete document.documentElement.dataset.theme;
   else document.documentElement.dataset.theme = theme;
-  $('theme').textContent = `${theme[0].toUpperCase()}${theme.slice(1)} theme`;
+  $('theme').textContent = `${theme[0].toUpperCase()}${theme.slice(1)}`;
 }
 applyTheme();
 $('theme').addEventListener('click', () => {
@@ -90,7 +90,7 @@ $('privacy').addEventListener('click', () => {
   hidden = !hidden;
   document.body.classList.toggle('hide-details', hidden);
   $('privacy').setAttribute('aria-pressed', hidden);
-  $('privacy').textContent = hidden ? 'Show IP details ◉' : 'Hide IP details ◉';
+  $('privacy').textContent = hidden ? 'Show IP details' : 'Hide IP details';
   $('ip-address').type = hidden ? 'password' : 'text';
   $('geo-results').hidden = hidden;
   for (const button of $('dns-results').querySelectorAll('[data-ip]')) {
@@ -217,7 +217,7 @@ $('start').addEventListener('click', async () => {
   $('copy-result').disabled = true;
   $('target').disabled = $('streams').disabled = true;
   $('start').classList.add('running');
-  $('start-icon').textContent = '□';
+  $('start-icon').textContent = '■';
   $('start-label').textContent = 'Stop test';
   renderSpeed({ phase: 'latency' });
   let latest;
@@ -259,7 +259,7 @@ $('start').addEventListener('click', async () => {
     run = null;
     $('target').disabled = $('streams').disabled = false;
     $('start').classList.remove('running');
-    $('start-icon').textContent = '↗';
+    $('start-icon').textContent = '▶';
     $('start-label').textContent = 'Test again';
   }
 });
