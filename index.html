@@ -13,15 +13,15 @@
     <link rel="icon" type="image/png" href="assets/icon.png" />
     <link rel="apple-touch-icon" href="assets/icon.png" />
     <link rel="manifest" href="manifest.json" />
-    <link rel="stylesheet" href="index.css?v=5" />
-    <script type="module" src="index.js?v=6"></script>
+    <link rel="stylesheet" href="index.css?v=7" />
+    <script type="module" src="index.js?v=7"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header shell">
       <a class="brand" href="https://lsong.org" aria-label="Lsong home">
         <img src="assets/icon.png" width="34" height="34" alt="" />
-        <span>MyIP<span class="brand-domain">by Lsong</span></span>
+        <span>MyIP</span>
       </a>
       <nav aria-label="Main navigation">
         <a href="https://lsong.org/start"
@@ -44,10 +44,6 @@
             <h1 id="speed-title">Internet speed</h1>
             <p>Your connection, a little clearer.</p>
           </div>
-          <div class="server-control">
-            <label for="target">Test server</label
-            ><select id="target"></select>
-          </div>
         </header>
         <div class="run-controls">
           <button type="button" id="start" class="start-button">
@@ -55,11 +51,24 @@
             ><span id="start-label">Start test</span>
           </button>
           <div class="control-card connection-control">
-            <label for="streams">Streams</label
-            ><select id="streams">
-              <option value="3">Parallel</option>
-              <option value="1">Single</option>
-            </select>
+            <span class="control-label">Connections</span>
+            <div class="stream-toggle">
+              <span id="stream-multi" class="mode-label selected">Multi</span>
+              <button
+                type="button"
+                id="streams"
+                class="stream-switch"
+                role="switch"
+                aria-checked="false"
+                aria-label="Use a single stream"
+              >
+                <span class="switch-thumb" aria-hidden="true"
+                  ><span class="multi-symbol">≋</span
+                  ><span class="single-symbol">1</span></span
+                >
+              </button>
+              <span id="stream-single" class="mode-label">Single</span>
+            </div>
           </div>
           <div class="control-card stat">
             <span>Idle latency</span>
@@ -73,78 +82,86 @@
         <p id="test-status" class="test-feedback" role="status">
           Ready when you are.
         </p>
-        <div class="speed-workspace">
-          <section
-            class="direction"
-            id="download-panel"
-            aria-labelledby="download-title"
-          >
-            <div class="direction-title">
-              <h2 id="download-title">
-                <span aria-hidden="true">↓</span> Download
-              </h2>
-              <span class="phase-tag" id="download-state">WAITING</span>
-            </div>
-            <p class="speed-value">
-              <strong id="download-speed">—</strong><span>Mbps</span>
-            </p>
-            <svg
-              class="trend"
-              viewBox="0 0 480 112"
-              preserveAspectRatio="none"
-              role="img"
-              aria-label="Download speed over time"
+        <div class="throughput-panel">
+          <div class="speed-readouts">
+            <section
+              class="direction"
+              id="download-panel"
+              aria-labelledby="download-title"
             >
-              <path
-                class="chart-grid"
-                d="M0 28H480 M0 56H480 M0 84H480 M0 111H480"
-              />
-              <path class="chart-area" id="download-area" />
-              <path class="chart-line" id="download-line" />
-            </svg>
+              <div class="direction-title">
+                <h2 id="download-title">
+                  <span aria-hidden="true">↓</span> Download
+                </h2>
+                <span class="phase-tag" id="download-state">WAITING</span>
+              </div>
+              <p class="speed-value">
+                <strong id="download-speed">—</strong><span>Mbps</span>
+              </p>
+            </section>
+            <section
+              class="direction"
+              id="upload-panel"
+              aria-labelledby="upload-title"
+            >
+              <div class="direction-title">
+                <h2 id="upload-title">
+                  <span aria-hidden="true">↑</span> Upload
+                </h2>
+                <span class="phase-tag" id="upload-state">WAITING</span>
+              </div>
+              <p class="speed-value">
+                <strong id="upload-speed">—</strong><span>Mbps</span>
+              </p>
+            </section>
+          </div>
+          <figure class="chart-figure">
+            <div class="chart-plot">
+              <svg
+                id="throughput-chart"
+                class="trend"
+                viewBox="0 0 960 200"
+                preserveAspectRatio="none"
+                role="img"
+                aria-labelledby="chart-caption"
+              >
+                <path
+                  class="chart-grid"
+                  id="chart-grid"
+                  d="M0 50H960 M0 150H960"
+                />
+                <path class="chart-axis" id="chart-axis" d="M0 100H960" />
+                <path class="chart-area download-plot" id="download-area" />
+                <path class="chart-area upload-plot" id="upload-area" />
+                <path class="chart-line download-plot" id="download-line" />
+                <path class="chart-line upload-plot" id="upload-line" />
+              </svg>
+              <span class="axis-zero" id="axis-zero" aria-hidden="true">0</span>
+            </div>
+            <div class="chart-time" aria-hidden="true">
+              <span>0s</span><span>3s</span><span>6s</span><span>9s</span
+              ><span>12s</span>
+            </div>
+            <figcaption id="chart-caption">Speed over time · Mbps</figcaption>
+          </figure>
+          <div class="transfer-details">
             <div class="direction-meta">
               <span
                 >Loaded latency<strong id="download-latency">— ms</strong></span
               ><span>Downloaded<strong id="download-bytes">0 B</strong></span>
             </div>
-          </section>
-          <section
-            class="direction"
-            id="upload-panel"
-            aria-labelledby="upload-title"
-          >
-            <div class="direction-title">
-              <h2 id="upload-title">
-                <span aria-hidden="true">↑</span> Upload
-              </h2>
-              <span class="phase-tag" id="upload-state">WAITING</span>
-            </div>
-            <p class="speed-value">
-              <strong id="upload-speed">—</strong><span>Mbps</span>
-            </p>
-            <svg
-              class="trend"
-              viewBox="0 0 480 112"
-              preserveAspectRatio="none"
-              role="img"
-              aria-label="Upload speed over time"
-            >
-              <path
-                class="chart-grid"
-                d="M0 28H480 M0 56H480 M0 84H480 M0 111H480"
-              />
-              <path class="chart-area" id="upload-area" />
-              <path class="chart-line" id="upload-line" />
-            </svg>
             <div class="direction-meta">
               <span
                 >Loaded latency<strong id="upload-latency">— ms</strong></span
               ><span>Uploaded<strong id="upload-bytes">0 B</strong></span>
             </div>
-          </section>
+          </div>
         </div>
         <footer class="panel-footer">
-          <p>Measures real downloads and uploads to the selected server.</p>
+          <p>
+            <span id="server-note">Cloudflare edge</span> · Real downloads and
+            uploads.
+          </p>
           <button type="button" id="copy-result" class="text-button" disabled>
             Copy results ↗
           </button>

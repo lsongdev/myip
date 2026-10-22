@@ -1,5 +1,6 @@
 import { runSpeedtest } from './lib/speedtest.js';
 import { cloudflare } from './providers/cloudflare.js?v=5';
+import { buildThroughputChart } from './ui/throughput-chart.js?v=7';
 import {
   getPublicIP,
   lookupLocation,
@@ -8,7 +9,7 @@ import {
 } from './providers/network.js';
 
 const $ = (id) => document.getElementById(id);
-const targets = [cloudflare];
+const speedTransport = cloudflare;
 const addresses = new Map();
 let hidden = false;
 let run;
@@ -164,24 +165,27 @@ async function refreshAddresses() {
 }
 $('refresh-ip').addEventListener('click', refreshAddresses);
 
-for (const target of targets)
-  $('target').add(new Option(target.name, target.id));
+$('server-note').textContent = speedTransport.name;
+$('streams').addEventListener('click', () => {
+  const single = $('streams').getAttribute('aria-checked') !== 'true';
+  $('streams').setAttribute('aria-checked', String(single));
+  $('stream-multi').classList.toggle('selected', !single);
+  $('stream-single').classList.toggle('selected', single);
+});
 
-function chart(direction, samples) {
-  const values = samples.map((sample) => sample.mbps);
-  const maximum = Math.max(1, ...values) * 1.15;
-  const points = values.map(
-    (value, index) =>
-      `${((index / Math.max(values.length - 1, 1)) * 480).toFixed(1)},${(108 - (value / maximum) * 100).toFixed(1)}`,
-  );
-  $(`${direction}-line`).setAttribute(
-    'd',
-    points.length > 1 ? `M${points.join(' L')}` : '',
-  );
-  $(`${direction}-area`).setAttribute(
-    'd',
-    points.length > 1 ? `M0,112 L${points.join(' L')} L480,112 Z` : '',
-  );
+function renderChart(state) {
+  const plot = buildThroughputChart(state);
+  for (const direction of ['download', 'upload']) {
+    $(`${direction}-line`).setAttribute('d', plot[direction].line);
+    $(`${direction}-area`).setAttribute('d', plot[direction].area);
+  }
+  $('chart-axis').setAttribute('d', plot.axis);
+  $('chart-grid').setAttribute('d', plot.grid);
+  $('axis-zero').style.top = `${plot.baseline / 2}%`;
+  $('chart-caption').textContent = plot.caption;
+  document.querySelectorAll('.chart-time span').forEach((label, index) => {
+    label.textContent = plot.ticks[index];
+  });
 }
 
 function renderSpeed(state) {
@@ -203,8 +207,8 @@ function renderSpeed(state) {
     $(`${direction}-speed`).textContent = number(reading?.mbps);
     $(`${direction}-latency`).textContent = `${number(reading?.latency)} ms`;
     $(`${direction}-bytes`).textContent = size(reading?.bytes ?? 0);
-    chart(direction, reading?.samples ?? []);
   }
+  renderChart(state);
 }
 
 $('start').addEventListener('click', async () => {
@@ -215,7 +219,8 @@ $('start').addEventListener('click', async () => {
   const controller = (run = new AbortController());
   result = null;
   $('copy-result').disabled = true;
-  $('target').disabled = $('streams').disabled = true;
+  const streams = $('streams').getAttribute('aria-checked') === 'true' ? 1 : 3;
+  $('streams').disabled = true;
   $('start').classList.add('running');
   $('start-icon').textContent = '■';
   $('start-label').textContent = 'Stop test';
@@ -223,8 +228,8 @@ $('start').addEventListener('click', async () => {
   let latest;
   try {
     const state = await runSpeedtest({
-      transport: targets.find((target) => target.id === $('target').value),
-      streams: Number($('streams').value),
+      transport: speedTransport,
+      streams,
       signal: controller.signal,
       onUpdate(state) {
         latest = state;
@@ -242,8 +247,8 @@ $('start').addEventListener('click', async () => {
     });
     result = {
       ...state,
-      target: $('target').selectedOptions[0].textContent,
-      streams: Number($('streams').value),
+      target: speedTransport.name,
+      streams,
     };
     $('copy-result').disabled = false;
   } catch (error) {
@@ -257,7 +262,7 @@ $('start').addEventListener('click', async () => {
     renderSpeed({ ...latest, phase: 'stopped' });
   } finally {
     run = null;
-    $('target').disabled = $('streams').disabled = false;
+    $('streams').disabled = false;
     $('start').classList.remove('running');
     $('start-icon').textContent = '▶';
     $('start-label').textContent = 'Test again';
