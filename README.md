@@ -12,11 +12,14 @@ npm test
 - `index.html` / `index.css`: semantic page and responsive light/dark presentation. Styles are self-contained so the homepage's global header, heading and form rules cannot affect tool layouts; the logo uses a local copy of the homepage's actual `/assets/web/icon.png` asset, avoiding cross-origin image loading failures.
 - `index.js`: DOM events, rendering, request ownership, cancellation and ephemeral UI state.
 - `ui/throughput-chart.js`: pure SVG plot geometry for the shared chart. During a transfer it shows that direction; completed results share a time and Mbps scale, with download above zero and upload below it. Below-axis positions represent positive upload rates.
+- `ui/connectivity.js`: compact website cards, per-tab response history, lazy checks and cancellation when hidden or running a bandwidth test.
+- `lib/connectivity.js`: bounded concurrent sampling over `probe({ signal })` targets, with independent response, timeout and unavailable results. `probeEndpoint({ url, signal, timeout })` measures time to an HTTP response without requiring CORS.
 - `lib/speedtest.js`: measurement lifecycle and immutable progress snapshots. Its context-aware API is `runSpeedtest({ transport, streams, signal, onUpdate })`. No DOM or vendor endpoints.
 - `lib/statistics.js`: pure latency, jitter and throughput calculations.
 - `lib/http.js`: CORS requests, HTTP status validation, full-body deadlines and cancellable waits. No service-specific parsing.
 - `providers/cloudflare.js`: Cloudflare's public download/upload wire protocol, streaming byte counting and acknowledged uploads.
 - `providers/network.js`: IP, geolocation and Google DNS JSON adapters, validation and normalized domain results.
+- `providers/websites.js`: named connectivity targets and public resource URLs. Brand icons are local; their official sources are listed in `assets/sites/SOURCES.md`.
 
 To replace the default speed server, implement `ping({ signal })`, `download({ signal, bytes, onBytes })` and optionally `upload({ signal, bytes })`, then set `speedTransport` in `index.js` to that provider. There is no server picker while only one provider is configured. Ping resolves in milliseconds; download reports actual received chunks; upload resolves only after server acknowledgement. Endpoints must support CORS, uncached responses and cancellation; `Timing-Allow-Origin` improves ping accuracy. These details belong in the provider, not the measurement engine. A provider without upload skips that phase.
 
@@ -28,6 +31,12 @@ Measurements are to the configured endpoint, not a guarantee of access-line capa
 
 IPv4 and IPv6 use family-specific ipify endpoints with family-specific icanhazip fallback. An unavailable IPv6 result is not evidence that the device has no IPv6 configuration. DNS supports multiple records, CNAME answers, NODATA and NXDOMAIN; it respects the selected type. Location providers can reject requests or rate limit, and their databases are approximate. API output is rendered as text, never injected as HTML.
 
+Website connectivity checks start once the section enters view. Each run samples eight destinations three times, at most four requests concurrently, with a five-second deadline per request. A card retries only that destination; the header retries or stops the group. The latest 12 results per destination stay in memory until the page is closed or reloaded. Checks pause during the speed test and stop when the tab is hidden. Green dots indicate responses under 800 ms, amber slower responses, and red timeout/unavailable results.
+
+These are direct, credential-free, uncached `HEAD` requests to public resources. Timings include browser scheduling, DNS/TLS when needed and HTTP overhead; they are not ICMP ping. Cross-origin opaque responses do not expose HTTP status, so “Responded” includes error responses and does not establish complete website health. Failed probes may reflect browser policy, extensions, endpoint behavior or network restrictions, and are never labelled as proof of blocking.
+
 ## Inspiration
 
 The measurement-first layout, separate download/upload curves, loaded latency and sustained-rate approach were inspired by [SukkaW/speed.skk.moe](https://github.com/SukkaW/speed.skk.moe). This is an independent implementation for this static site; it does not use Sukka's private endpoints or build stack. Default measurement endpoints are documented by [Cloudflare's speedtest project](https://github.com/cloudflare/speedtest). Public address APIs are documented at [ipify](https://www.ipify.org).
+
+The compact destination cards, regional badges and response-history dots take inspiration from [ip.skk.moe](https://ip.skk.moe/). Requests use the destinations' public resources rather than Sukka's infrastructure.

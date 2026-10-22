@@ -1,4 +1,6 @@
 import { runSpeedtest } from './lib/speedtest.js';
+import { websites } from './providers/websites.js?v=8';
+import { mountConnectivity } from './ui/connectivity.js?v=8';
 import { cloudflare } from './providers/cloudflare.js?v=5';
 import { buildThroughputChart } from './ui/throughput-chart.js?v=7';
 import {
@@ -10,6 +12,10 @@ import {
 
 const $ = (id) => document.getElementById(id);
 const speedTransport = cloudflare;
+const connectivity = mountConnectivity({
+  root: $('connectivity'),
+  targets: websites,
+});
 const addresses = new Map();
 let hidden = false;
 let run;
@@ -216,6 +222,7 @@ $('start').addEventListener('click', async () => {
     run.abort();
     return;
   }
+  connectivity.setSuspended(true);
   const controller = (run = new AbortController());
   result = null;
   $('copy-result').disabled = true;
@@ -266,6 +273,7 @@ $('start').addEventListener('click', async () => {
     $('start').classList.remove('running');
     $('start-icon').textContent = '▶';
     $('start-label').textContent = 'Test again';
+    connectivity.setSuspended(false);
   }
 });
 
@@ -402,6 +410,7 @@ $('dns-form').addEventListener('submit', async (event) => {
 });
 
 window.addEventListener('pagehide', () => {
+  connectivity.cancel();
   run?.abort();
   ipRequest?.abort();
   geoRequest?.abort();
