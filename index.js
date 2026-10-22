@@ -1,5 +1,5 @@
 import { runSpeedtest } from './lib/speedtest.js';
-import { cloudflare } from './providers/cloudflare.js';
+import { cloudflare } from './providers/cloudflare.js?v=5';
 import {
   getPublicIP,
   lookupLocation,
