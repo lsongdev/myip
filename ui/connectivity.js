@@ -2,6 +2,7 @@ import {
   CONNECTIVITY_SAMPLES,
   runConnectivity,
 } from '../lib/connectivity.js?v=9';
+import { median } from '../lib/statistics.js';
 
 const HISTORY = CONNECTIVITY_SAMPLES;
 const statusText = {
@@ -34,13 +35,17 @@ export function mountConnectivity({ root, targets }) {
 
   function render(id, reading) {
     const card = cards.get(id);
+    const history = histories.get(id);
+    const responses = history.filter((point) => point.status === 'responded');
+    const ms = median(responses.map((point) => point.ms));
     card.button.dataset.status = reading?.status ?? 'idle';
-    card.time.textContent =
-      reading?.status === 'responded' ? Math.round(reading.ms) : '—';
+    card.time.textContent = ms === null ? '—' : Math.round(ms);
+    card.time.title = responses.length
+      ? `Median of ${responses.length} ${responses.length === 1 ? 'response' : 'responses'}`
+      : 'No responses yet';
     card.status.textContent = reading
       ? statusText[reading.status]
       : 'Not checked';
-    const history = histories.get(id);
     card.history.replaceChildren();
     for (let index = 0; index < HISTORY; index++) {
       const point = history[index];
@@ -60,7 +65,7 @@ export function mountConnectivity({ root, targets }) {
     );
     card.button.setAttribute(
       'aria-label',
-      `Check ${card.name}. ${reading ? describe(reading) : 'Not checked'}`,
+      `Check ${card.name}. ${ms === null ? 'No responses yet' : `Median response ${Math.round(ms)} ms from ${responses.length} ${responses.length === 1 ? 'response' : 'responses'}`}. Latest check: ${reading ? describe(reading) : 'Not checked'}`,
     );
   }
 

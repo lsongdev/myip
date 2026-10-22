@@ -13,8 +13,8 @@
     <link rel="icon" type="image/png" href="assets/icon.png" />
     <link rel="apple-touch-icon" href="assets/icon.png" />
     <link rel="manifest" href="manifest.json" />
-    <link rel="stylesheet" href="index.css?v=8" />
-    <script type="module" src="index.js?v=9"></script>
+    <link rel="stylesheet" href="index.css?v=10" />
+    <script type="module" src="index.js?v=10"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -240,7 +240,7 @@
           <p id="connectivity-status" role="status">
             Checks start when this section is in view.
           </p>
-          <p>12 checks per site · HTTP response time</p>
+          <p>Median response time · 12 checks per site</p>
         </footer>
       </section>
       <p class="visually-hidden" id="announcement" role="status"></p>
@@ -348,7 +348,10 @@
             and connection setup overhead and are not ICMP ping. Timeouts or
             unavailable results can also be caused by browser restrictions,
             extensions or the resource itself. Detection pauses during a speed
-            test and stops when the tab is hidden. Starting a new check resets
+            test and stops when the tab is hidden. The number shows the median
+            of successful responses in the current run; it stays visible while
+            the next request is pending. Dots and the status label show each
+            individual attempt. Starting a new check resets
             the selected sites' dots. Results stay only in this tab.
           </p>
         </div>
