@@ -13,8 +13,8 @@
     <link rel="icon" type="image/png" href="assets/icon.png" />
     <link rel="apple-touch-icon" href="assets/icon.png" />
     <link rel="manifest" href="manifest.json" />
-    <link rel="stylesheet" href="index.css?v=7" />
-    <script type="module" src="index.js?v=7"></script>
+    <link rel="stylesheet" href="index.css?v=8" />
+    <script type="module" src="index.js?v=8"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -221,6 +221,28 @@
           </div>
         </div>
       </section>
+      <section
+        id="connectivity"
+        class="connectivity-section"
+        aria-labelledby="connectivity-title"
+      >
+        <header class="connectivity-heading">
+          <div>
+            <h2 id="connectivity-title">Website connectivity</h2>
+            <p>Small checks across your everyday destinations.</p>
+          </div>
+          <button type="button" id="check-sites" class="quiet-button">
+            Check all ↻
+          </button>
+        </header>
+        <ul class="connectivity-grid" aria-label="Website response checks"></ul>
+        <footer class="connectivity-footer">
+          <p id="connectivity-status" role="status">
+            Checks start when this section is in view.
+          </p>
+          <p>HTTP response time · latest 12 checks</p>
+        </footer>
+      </section>
       <p class="visually-hidden" id="announcement" role="status"></p>
       <div class="tools-grid">
         <section class="tool-panel" aria-labelledby="dns-title">
@@ -316,6 +338,16 @@
             the provider you select. “Hide IP details” masks addresses and
             locations on this page, including copied speed results. No test
             history is saved.
+          </p>
+          <p>
+            Website connectivity uses small, direct browser HEAD requests to
+            public resources, with three attempts per check. A response confirms
+            the probe was reached; it does not verify the full website or its
+            HTTP status, which cross-origin responses may hide. Times include
+            browser and connection setup overhead and are not ICMP ping.
+            Timeouts or unavailable results can also be caused by browser
+            restrictions, extensions or the resource itself. Detection pauses
+            during a speed test. History is kept only in this tab.
           </p>
         </div>
       </details>
