@@ -35,6 +35,8 @@ Website connectivity checks start once the section enters view. Each run samples
 
 These are direct, credential-free, uncached `HEAD` requests to public resources. Timings include browser scheduling, DNS/TLS when needed and HTTP overhead; they are not ICMP ping. Cross-origin opaque responses do not expose HTTP status, so “Responded” includes error responses and does not establish complete website health. Failed probes may reflect browser policy, extensions, endpoint behavior or network restrictions, and are never labelled as proof of blocking.
 
+The numeric reading is the median of successful response timings in the current run. It remains visible during pending probes and after individual failures; the status label describes the latest attempt. The 12 dots preserve each attempt's raw timing or failure, so aggregation never hides unsuccessful probes. All-failed runs have no numeric timing. Starting a new run clears the selected sites' previous readings.
+
 ## Inspiration
 
 The measurement-first layout, separate download/upload curves, loaded latency and sustained-rate approach were inspired by [SukkaW/speed.skk.moe](https://github.com/SukkaW/speed.skk.moe). This is an independent implementation for this static site; it does not use Sukka's private endpoints or build stack. Default measurement endpoints are documented by [Cloudflare's speedtest project](https://github.com/cloudflare/speedtest). Public address APIs are documented at [ipify](https://www.ipify.org).

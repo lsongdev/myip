@@ -1208,16 +1208,6 @@ dd {
     font-size: 8px;
   }
 }
-@media (prefers-reduced-motion: no-preference) {
-  .site-card[data-status='checking'] .site-time {
-    animation: probe-pulse 1.2s ease-in-out infinite;
-  }
-  @keyframes probe-pulse {
-    50% {
-      opacity: 0.4;
-    }
-  }
-}
 @media (forced-colors: active) {
   .site-card,
   .history-dot {
