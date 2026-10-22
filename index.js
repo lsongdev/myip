@@ -1,183 +1,405 @@
-// Constants
-const DNS_API = 'https://dns.google/resolve';
+import { runSpeedtest } from './lib/speedtest.js';
+import { cloudflare } from './providers/cloudflare.js';
+import {
+  getPublicIP,
+  lookupLocation,
+  resolveDNS,
+  ipVersion,
+} from './providers/network.js';
 
-const SPEED_TEST_WEBSITES = [
-  { name: 'Google', url: 'https://www.google.com/favicon.ico' },
-  { name: 'Baidu', url: 'https://www.baidu.com/favicon.ico' },
-  { name: 'Facebook', url: 'https://www.facebook.com/favicon.ico' },
-  { name: 'Twitter', url: 'https://twitter.com/favicon.ico' },
-  { name: 'Amazon', url: 'https://www.amazon.com/favicon.ico' },
-  { name: 'Microsoft', url: 'https://www.microsoft.com/favicon.ico' }
-];
+const $ = (id) => document.getElementById(id);
+const targets = [cloudflare];
+const addresses = new Map();
+let hidden = false;
+let run;
+let result;
+let ipRequest;
+let geoRequest;
+let dnsRequest;
+let theme = 'system';
+try {
+  theme = localStorage.getItem('myip-theme') || 'system';
+} catch {
+  /* Storage may be unavailable. */
+}
 
-// Utility functions
-const displayResult = (message) => {
-  document.getElementById('results').innerHTML = message;
-};
-
-const displayGeoResults = (geoData) => {
-  const tableRows = Object.entries(geoData)
-    .map(([key, value]) => `
-      <tr>
-        <td>${key}</td>
-        <td>${value || '-'}</td>
-      </tr>
-    `)
-    .join('');
-  const html = `
-    <table class="table table-compact">
-      <thead><tr><th>Information</th><th>Value</th></tr></thead>
-      <tbody>${tableRows}</tbody>
-    </table>
-  `;
-
-  displayResult(html);
-};
-
-const getInputValue = (id) => document.getElementById(id).value;
-const setInputValue = (id, value) => document.getElementById(id).value = value;
-
-// Independent service functions
-const ipify = async (version) => {
-  const url = `https://api${version === 'v6' ? '64' : ''}.ipify.org?format=json`;
-  const response = await fetch(url);
-  const data = await response.json();
-  return data.ip;
-};
-
-const httpbin = async () => {
-  const url = 'https://httpbin.org/ip';
-  const response = await fetch(url);
-  const data = await response.json();
-  return data.origin;
-};
-
-const ipapi = async ip => {
-  const url = `https://ipapi.co/${ip}/json/`;
-  const response = await fetch(url);
-  return response.json();
-};
-
-const ipinfo = async ip => {
-  const url = `https://ipinfo.io/${ip}/json`;
-  const response = await fetch(url);
-  return response.json();
-};
-
-// Main functions
-const resolveDomain = async domain => {
-  const response = await fetch(`${DNS_API}?name=${domain}`);
-  const data = await response.json();
-  return data.Answer[0].data;
-};
-
-const checkIP = async (type, source) => {
-  return await ({ ipify, httpbin }[source])(type);
-};
-
-const geolocateIP = async (ip, source) => {
-  return await ({ ipapi, ipinfo }[source])(ip);
-};
-
-// Speed test functions
-const testWebsiteSpeed = (updateCallback) => {
-  SPEED_TEST_WEBSITES.forEach(site => {
-    const startTime = performance.now();
-    const img = new Image();
-
-    img.onload = img.onerror = () => {
-      const duration = (performance.now() - startTime).toFixed(2);
-      updateCallback({
-        name: site.name,
-        duration,
-        success: img.complete
-      });
-    };
-
-    img.src = `${site.url}?t=${new Date().getTime()}`;
-  });
-};
-
-const initializeSpeedTestResults = () => {
-  const tableBody = SPEED_TEST_WEBSITES
-    .map(site => `
-      <tr id="speed-${site.name.toLowerCase()}">
-        <td>${site.name}</td>
-        <td>Testing...</td>
-      </tr>
-    `)
-    .join('');
-
-  const html = `
-    <table class="table table-compact">
-      <thead><tr><th>Website</th><th>Latency</th></tr></thead>
-      <tbody>${tableBody}</tbody>
-    </table>
-    <p>Note: Latency values are for reference only. Actual values may be lower.</p>
-  `;
-  document.getElementById('speedtest_results').innerHTML = html;
-};
-
-const updateSpeedTestResult = (result) => {
-  const row = document.getElementById(`speed-${result.name.toLowerCase()}`);
-  if (row) {
-    const latencyCell = row.cells[1];
-    if (result.success) {
-      const duration = parseFloat(result.duration);
-      const color = duration < 300 ? 'green' : duration < 500 ? 'orange' : 'red';
-      latencyCell.innerHTML = `<span style="color: ${color}">${result.duration} ms</span>`;
-    } else {
-      latencyCell.innerHTML = '<span style="color: red">Access failed</span>';
-    }
+function applyTheme() {
+  if (theme === 'system') delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = theme;
+  $('theme').textContent = `${theme[0].toUpperCase()}${theme.slice(1)} theme`;
+}
+applyTheme();
+$('theme').addEventListener('click', () => {
+  theme = ['system', 'light', 'dark'][
+    (['system', 'light', 'dark'].indexOf(theme) + 1) % 3
+  ];
+  try {
+    localStorage.setItem('myip-theme', theme);
+  } catch {
+    /* Optional preference. */
   }
-};
-
-// Event listeners
-document.addEventListener('DOMContentLoaded', () => {
-
-  document.getElementById('testSpeedBtn').addEventListener('click', speedtest);
-  document.getElementById('dns').addEventListener('submit', async e => {
-    e.preventDefault();
-    const domain = getInputValue('domainInput');
-    const ip = await resolveDomain(domain);
-    displayResult(`Domain ${domain} resolved successfully<br>IP: ${ip}`);
-    setInputValue('ipInput', ip);
-    await handleGeolocateIP(ip);
-  });
-
-  document.getElementById('checkIPv4Btn').addEventListener('click', async () => {
-    await handleCheckIP('v4');
-  });
-
-  document.getElementById('checkIPv6Btn').addEventListener('click', async () => {
-    await handleCheckIP('v6');
-  });
-
-  document.getElementById('geolocation').addEventListener('submit', async e => {
-    e.preventDefault();
-    const ip = getInputValue('ipInput');
-    await handleGeolocateIP(ip);
-  });
-
-  speedtest();
-  handleCheckIP();
+  applyTheme();
 });
 
-const speedtest = () => {
-  initializeSpeedTestResults();
-  testWebsiteSpeed(updateSpeedTestResult);
+const number = (value) =>
+  Number.isFinite(value) ? value.toFixed(value >= 100 ? 0 : 1) : '—';
+const size = (bytes) =>
+  bytes >= 1048576
+    ? `${(bytes / 1048576).toFixed(1)} MiB`
+    : bytes >= 1024
+      ? `${(bytes / 1024).toFixed(0)} KiB`
+      : `${bytes} B`;
+const announce = (message) => {
+  $('announcement').textContent = message;
 };
+const setStatus = (id, message, error = false) => {
+  $(id).textContent = message;
+  $(id).classList.toggle('error', error);
+};
+const errorMessage = (error) =>
+  error.name === 'TimeoutError'
+    ? 'The request timed out. Please try again.'
+    : error instanceof TypeError && /fetch|network|load/i.test(error.message)
+      ? 'Could not reach the service. Check your connection or try another provider.'
+      : error.message || 'The request failed. Please try again.';
 
-// Helper functions
-const handleCheckIP = async (version) => {
-  const source = getInputValue('ipSource');
-  const ip = await checkIP(version, source);
-  setInputValue('ipInput', ip);
-  await handleGeolocateIP(ip);
-};
+async function copy(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    announce('Copied to clipboard.');
+  } catch {
+    announce('Clipboard unavailable. Select and copy the text manually.');
+  }
+}
 
-const handleGeolocateIP = async (ip) => {
-  const source = getInputValue('geoSource');
-  const result = await geolocateIP(ip, source);
-  displayGeoResults(result);
-};
+function renderAddresses() {
+  for (const version of [4, 6]) {
+    const value = addresses.get(version);
+    $(`ipv${version}`).textContent =
+      hidden && value
+        ? '••••••••••••'
+        : value || (ipRequest ? 'Checking…' : 'Unavailable');
+    $(`ipv${version}`).disabled = !value || hidden;
+  }
+}
+for (const version of [4, 6])
+  $(`ipv${version}`).addEventListener('click', () => {
+    if (!hidden) copy(addresses.get(version));
+  });
+$('privacy').addEventListener('click', () => {
+  hidden = !hidden;
+  document.body.classList.toggle('hide-details', hidden);
+  $('privacy').setAttribute('aria-pressed', hidden);
+  $('privacy').textContent = hidden ? 'Show IP details ◉' : 'Hide IP details ◉';
+  $('ip-address').type = hidden ? 'password' : 'text';
+  $('geo-results').hidden = hidden;
+  for (const button of $('dns-results').querySelectorAll('[data-ip]')) {
+    button.textContent = hidden ? '••••••••' : button.dataset.ip;
+    button.disabled = hidden;
+  }
+  $('connection-location').textContent = hidden
+    ? 'Details hidden'
+    : connectionDescription;
+  renderAddresses();
+});
+
+let connectionDescription = 'Looking up your network…';
+async function refreshAddresses() {
+  ipRequest?.abort();
+  const controller = (ipRequest = new AbortController());
+  addresses.clear();
+  renderAddresses();
+  connectionDescription = 'Looking up your network…';
+  if (!hidden) $('connection-location').textContent = connectionDescription;
+  const pending = [4, 6].map(async (version) => {
+    try {
+      let ip;
+      try {
+        ip = await getPublicIP({ version, signal: controller.signal });
+      } catch {
+        controller.signal.throwIfAborted();
+        ip = await getPublicIP({
+          version,
+          provider: 'icanhazip',
+          signal: controller.signal,
+        });
+      }
+      controller.signal.throwIfAborted();
+      addresses.set(version, ip);
+      renderAddresses();
+    } catch {
+      if (!controller.signal.aborted)
+        $(`ipv${version}`).textContent =
+          version === 6 ? 'IPv6 unavailable' : 'Lookup unavailable';
+    }
+  });
+  await Promise.allSettled(pending);
+  if (ipRequest !== controller) return;
+  // Keep a useful IPv6-specific failure label after both requests finish.
+  renderAddresses();
+  if (!addresses.has(6)) $('ipv6').textContent = 'IPv6 unavailable';
+  const ip = addresses.get(4) || addresses.get(6);
+  if (!ip) {
+    connectionDescription = 'Network details unavailable';
+  } else {
+    if (!$('ip-address').value) $('ip-address').value = ip;
+    try {
+      const location = await lookupLocation({ ip, signal: controller.signal });
+      controller.signal.throwIfAborted();
+      connectionDescription =
+        [location.city, location.country, location.provider]
+          .filter(Boolean)
+          .join(' · ') || 'Location unavailable';
+    } catch {
+      if (controller.signal.aborted) return;
+      connectionDescription = 'Location unavailable · IP lookup succeeded';
+    }
+  }
+  if (!hidden) $('connection-location').textContent = connectionDescription;
+  if (ipRequest === controller) {
+    ipRequest = null;
+    renderAddresses();
+    if (!addresses.has(6)) $('ipv6').textContent = 'IPv6 unavailable';
+  }
+}
+$('refresh-ip').addEventListener('click', refreshAddresses);
+
+for (const target of targets)
+  $('target').add(new Option(target.name, target.id));
+
+function chart(direction, samples) {
+  const values = samples.map((sample) => sample.mbps);
+  const maximum = Math.max(1, ...values) * 1.15;
+  const points = values.map(
+    (value, index) =>
+      `${((index / Math.max(values.length - 1, 1)) * 480).toFixed(1)},${(108 - (value / maximum) * 100).toFixed(1)}`,
+  );
+  $(`${direction}-line`).setAttribute(
+    'd',
+    points.length > 1 ? `M${points.join(' L')}` : '',
+  );
+  $(`${direction}-area`).setAttribute(
+    'd',
+    points.length > 1 ? `M0,112 L${points.join(' L')} L480,112 Z` : '',
+  );
+}
+
+function renderSpeed(state) {
+  $('latency').textContent = number(state.latency);
+  $('jitter').textContent = number(state.jitter);
+  for (const direction of ['download', 'upload']) {
+    const reading = state[direction];
+    const active = state.phase === direction;
+    const phaseTag = active
+      ? 'MEASURING'
+      : reading
+        ? state.phase === 'done' ||
+          (direction === 'download' && state.phase === 'upload')
+          ? 'COMPLETE'
+          : 'PARTIAL'
+        : 'WAITING';
+    $(`${direction}-panel`).classList.toggle('active', active);
+    $(`${direction}-state`).textContent = phaseTag;
+    $(`${direction}-speed`).textContent = number(reading?.mbps);
+    $(`${direction}-latency`).textContent = `${number(reading?.latency)} ms`;
+    $(`${direction}-bytes`).textContent = size(reading?.bytes ?? 0);
+    chart(direction, reading?.samples ?? []);
+  }
+}
+
+$('start').addEventListener('click', async () => {
+  if (run) {
+    run.abort();
+    return;
+  }
+  const controller = (run = new AbortController());
+  result = null;
+  $('copy-result').disabled = true;
+  $('target').disabled = $('streams').disabled = true;
+  $('start').classList.add('running');
+  $('start-icon').textContent = '□';
+  $('start-label').textContent = 'Stop test';
+  renderSpeed({ phase: 'latency' });
+  let latest;
+  try {
+    const state = await runSpeedtest({
+      transport: targets.find((target) => target.id === $('target').value),
+      streams: Number($('streams').value),
+      signal: controller.signal,
+      onUpdate(state) {
+        latest = state;
+        renderSpeed(state);
+        setStatus(
+          'test-status',
+          {
+            latency: 'Measuring idle latency…',
+            download: 'Measuring download…',
+            upload: 'Measuring upload…',
+            done: 'Test complete.',
+          }[state.phase],
+        );
+      },
+    });
+    result = {
+      ...state,
+      target: $('target').selectedOptions[0].textContent,
+      streams: Number($('streams').value),
+    };
+    $('copy-result').disabled = false;
+  } catch (error) {
+    setStatus(
+      'test-status',
+      controller.signal.aborted
+        ? 'Test stopped. Run again anytime.'
+        : errorMessage(error),
+      !controller.signal.aborted,
+    );
+    renderSpeed({ ...latest, phase: 'stopped' });
+  } finally {
+    run = null;
+    $('target').disabled = $('streams').disabled = false;
+    $('start').classList.remove('running');
+    $('start-icon').textContent = '↗';
+    $('start-label').textContent = 'Test again';
+  }
+});
+
+$('copy-result').addEventListener('click', () => {
+  if (!result) return;
+  const lines = [
+    'MyIP · lsong.org/myip',
+    result.target,
+    `${result.streams} concurrent stream(s)`,
+    `Download: ${number(result.download?.mbps)} Mbps`,
+    `Upload: ${number(result.upload?.mbps)} Mbps`,
+    `Latency: ${number(result.latency)} ms · Jitter: ${number(result.jitter)} ms`,
+    `Loaded latency: ↓ ${number(result.download?.latency)} ms · ↑ ${number(result.upload?.latency)} ms`,
+    `Transferred: ↓ ${size(result.download?.bytes ?? 0)} · ↑ ${size(result.upload?.bytes ?? 0)}`,
+  ];
+  if (!hidden) {
+    for (const [version, ip] of addresses) lines.push(`IPv${version}: ${ip}`);
+    lines.push(connectionDescription);
+  }
+  copy(lines.join('\n'));
+});
+
+function showLocation(location) {
+  const list = document.createElement('dl');
+  list.className = 'location-data';
+  for (const [key, value] of Object.entries(location)) {
+    if (!value) continue;
+    const term = document.createElement('dt');
+    term.textContent =
+      key === 'ip' || key === 'asn'
+        ? key.toUpperCase()
+        : key[0].toUpperCase() + key.slice(1);
+    const definition = document.createElement('dd');
+    definition.textContent = value;
+    list.append(term, definition);
+  }
+  $('geo-results').replaceChildren(list);
+}
+
+async function locate() {
+  geoRequest?.abort();
+  const controller = (geoRequest = new AbortController());
+  $('geo-results').replaceChildren();
+  setStatus('geo-status', 'Looking up location…');
+  const button = $('geo-form').querySelector('button');
+  button.disabled = true;
+  try {
+    const location = await lookupLocation({
+      ip: $('ip-address').value.trim(),
+      provider: $('geo-provider').value,
+      signal: controller.signal,
+    });
+    controller.signal.throwIfAborted();
+    showLocation(location);
+    setStatus(
+      'geo-status',
+      'Approximate location. This may be your VPN or proxy exit.',
+    );
+  } catch (error) {
+    if (!controller.signal.aborted)
+      setStatus('geo-status', errorMessage(error), true);
+  } finally {
+    if (geoRequest === controller) button.disabled = false;
+  }
+}
+$('geo-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  locate();
+});
+
+$('dns-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  dnsRequest?.abort();
+  const controller = (dnsRequest = new AbortController());
+  $('dns-results').replaceChildren();
+  setStatus('dns-status', 'Resolving records…');
+  const button = $('dns-form').querySelector('button');
+  button.disabled = true;
+  try {
+    const records = await resolveDNS({
+      hostname: $('hostname').value,
+      type: $('record-type').value,
+      signal: controller.signal,
+    });
+    controller.signal.throwIfAborted();
+    setStatus(
+      'dns-status',
+      !records.exists
+        ? 'This hostname does not exist (NXDOMAIN).'
+        : records.answers.length
+          ? `${records.answers.length} record(s). Select an IP address to look up its location.`
+          : `No ${records.type} records found.`,
+    );
+    if (!records.answers.length) return;
+    const table = document.createElement('table');
+    const head = table.createTHead().insertRow();
+    for (const label of ['Type', 'TTL', 'Value']) {
+      const th = document.createElement('th');
+      th.scope = 'col';
+      th.textContent = label;
+      head.append(th);
+    }
+    const body = table.createTBody();
+    for (const answer of records.answers) {
+      const row = body.insertRow();
+      row.insertCell().textContent = answer.type;
+      row.insertCell().textContent = `${answer.ttl}s`;
+      const cell = row.insertCell();
+      if (ipVersion(answer.value)) {
+        const action = document.createElement('button');
+        action.type = 'button';
+        action.className = 'address-action';
+        action.textContent = answer.value;
+        action.dataset.ip = answer.value;
+        if (hidden) {
+          action.textContent = '••••••••';
+          action.disabled = true;
+        }
+        action.title = 'Look up this IP address';
+        action.addEventListener('click', () => {
+          $('ip-address').value = answer.value;
+          locate();
+        });
+        cell.append(action);
+      } else cell.textContent = answer.value;
+    }
+    $('dns-results').replaceChildren(table);
+  } catch (error) {
+    if (!controller.signal.aborted)
+      setStatus('dns-status', errorMessage(error), true);
+  } finally {
+    if (dnsRequest === controller) button.disabled = false;
+  }
+});
+
+window.addEventListener('pagehide', () => {
+  run?.abort();
+  ipRequest?.abort();
+  geoRequest?.abort();
+  dnsRequest?.abort();
+});
+refreshAddresses();
