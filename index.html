@@ -5,147 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="A little clarity for your connection. Check your IP, measure download and upload speed, and look up DNS records."
+      content="Check your public IP, measure internet speed, and look up DNS records."
     />
-    <meta name="theme-color" content="#f6f5f1" />
+    <meta name="theme-color" content="#f5f6f8" />
     <meta name="author" content="Lsong" />
     <title>MyIP — Lsong</title>
-    <link rel="icon" type="image/svg+xml" href="https://lsong.org/icon.svg" />
-    <link rel="apple-touch-icon" href="https://lsong.org/icon-x128.png" />
+    <link rel="icon" type="image/png" href="assets/icon.png" />
+    <link rel="apple-touch-icon" href="assets/icon.png" />
     <link rel="manifest" href="manifest.json" />
-    <link rel="stylesheet" href="index.css?v=4" />
-    <script type="module" src="index.js?v=4"></script>
+    <link rel="stylesheet" href="index.css?v=5" />
+    <script type="module" src="index.js?v=5"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header shell">
-      <a class="brand" href="https://lsong.org"
-        ><img
-          src="https://lsong.org/icon.svg"
-          width="26"
-          height="26"
-          alt=""
-        /><span
-          >Lsong<span class="brand-slash"> / </span><strong>MyIP</strong></span
-        ></a
-      >
+      <a class="brand" href="https://lsong.org" aria-label="Lsong home">
+        <img src="assets/icon.png" width="34" height="34" alt="" />
+        <span>MyIP<span class="brand-domain">by Lsong</span></span>
+      </a>
       <nav aria-label="Main navigation">
         <a href="https://lsong.org/start"
           >All apps <span aria-hidden="true">↗</span></a
-        ><button
+        >
+        <button
           type="button"
           id="theme"
-          class="text-button"
+          class="quiet-button"
           aria-label="Change appearance"
         >
-          System theme
+          System
         </button>
       </nav>
     </header>
     <main id="main" class="shell">
-      <section class="intro" aria-labelledby="title">
-        <div>
-          <p class="eyebrow">
-            <span class="status-dot" aria-hidden="true"></span> A SMALL NETWORK
-            UTILITY
-          </p>
-          <h1 id="title">Know your connection<span class="accent">.</span></h1>
-          <p class="intro-copy">
-            Your address, your speed, and everything in between.
-          </p>
-        </div>
-        <button
-          type="button"
-          class="text-button privacy-button"
-          id="privacy"
-          aria-pressed="false"
-        >
-          Hide IP details <span aria-hidden="true">◉</span>
-        </button>
-      </section>
-
-      <section class="connection-strip" aria-label="Your connection">
-        <div class="address-info">
-          <div class="strip-label">
-            PUBLIC IPv4
-            <button
-              type="button"
-              id="refresh-ip"
-              class="icon-button"
-              aria-label="Refresh IP addresses"
-            >
-              ↻
-            </button>
-          </div>
-          <button
-            type="button"
-            id="ipv4"
-            class="ip-value"
-            aria-label="Copy IPv4 address"
-            disabled
-          >
-            Checking…
-          </button>
-        </div>
-        <div class="address-info">
-          <div class="strip-label">PUBLIC IPv6</div>
-          <button
-            type="button"
-            id="ipv6"
-            class="ip-value"
-            aria-label="Copy IPv6 address"
-            disabled
-          >
-            Checking…
-          </button>
-        </div>
-        <div>
-          <p class="strip-label">LOCATION / NETWORK</p>
-          <p id="connection-location" class="location-value">
-            Looking up your network…
-          </p>
-        </div>
-      </section>
-      <p class="visually-hidden" id="announcement" role="status"></p>
-
       <section class="speed-panel" aria-labelledby="speed-title">
-        <header class="panel-header">
+        <header class="speed-header">
           <div>
-            <p class="eyebrow">01 / MEASURE</p>
-            <h2 id="speed-title">Internet speed</h2>
+            <h1 id="speed-title">Internet speed</h1>
+            <p>Your connection, a little clearer.</p>
           </div>
-          <div class="speed-options">
-            <label class="visually-hidden" for="target">Test server</label
-            ><select id="target"></select
-            ><label class="visually-hidden" for="streams"
-              >Concurrent transfers</label
-            ><select id="streams">
-              <option value="3">Parallel streams</option>
-              <option value="1">Single stream</option>
-            </select>
+          <div class="server-control">
+            <label for="target">Test server</label
+            ><select id="target"></select>
           </div>
         </header>
-        <div class="speed-workspace">
-          <div class="run-controls">
-            <button type="button" id="start" class="start-button">
-              <span id="start-icon" aria-hidden="true">↗</span
-              ><span id="start-label">Start test</span>
-            </button>
-            <p id="test-status" role="status">Ready when you are.</p>
-            <div class="latency-stats">
-              <div>
-                <span>Idle latency</span>
-                <p><strong id="latency">—</strong> <small>ms</small></p>
-              </div>
-              <div>
-                <span>Jitter</span>
-                <p><strong id="jitter">—</strong> <small>ms</small></p>
-              </div>
-            </div>
+        <div class="run-controls">
+          <button type="button" id="start" class="start-button">
+            <span id="start-icon" aria-hidden="true">▶</span
+            ><span id="start-label">Start test</span>
+          </button>
+          <div class="control-card connection-control">
+            <label for="streams">Streams</label
+            ><select id="streams">
+              <option value="3">Parallel</option>
+              <option value="1">Single</option>
+            </select>
           </div>
-          <div class="direction" id="download-panel">
+          <div class="control-card stat">
+            <span>Idle latency</span>
+            <p><strong id="latency">—</strong><small>ms</small></p>
+          </div>
+          <div class="control-card stat">
+            <span>Jitter</span>
+            <p><strong id="jitter">—</strong><small>ms</small></p>
+          </div>
+        </div>
+        <p id="test-status" class="test-feedback" role="status">
+          Ready when you are.
+        </p>
+        <div class="speed-workspace">
+          <section
+            class="direction"
+            id="download-panel"
+            aria-labelledby="download-title"
+          >
             <div class="direction-title">
-              <h3><span aria-hidden="true">↓</span> Download</h3>
+              <h2 id="download-title">
+                <span aria-hidden="true">↓</span> Download
+              </h2>
               <span class="phase-tag" id="download-state">WAITING</span>
             </div>
             <p class="speed-value">
@@ -167,14 +104,19 @@
             </svg>
             <div class="direction-meta">
               <span
-                >Loaded latency
-                <strong id="download-latency">— ms</strong></span
-              ><span id="download-bytes">0 B</span>
+                >Loaded latency<strong id="download-latency">— ms</strong></span
+              ><span>Downloaded<strong id="download-bytes">0 B</strong></span>
             </div>
-          </div>
-          <div class="direction" id="upload-panel">
+          </section>
+          <section
+            class="direction"
+            id="upload-panel"
+            aria-labelledby="upload-title"
+          >
             <div class="direction-title">
-              <h3><span aria-hidden="true">↑</span> Upload</h3>
+              <h2 id="upload-title">
+                <span aria-hidden="true">↑</span> Upload
+              </h2>
               <span class="phase-tag" id="upload-state">WAITING</span>
             </div>
             <p class="speed-value">
@@ -196,31 +138,79 @@
             </svg>
             <div class="direction-meta">
               <span
-                >Loaded latency <strong id="upload-latency">— ms</strong></span
-              ><span id="upload-bytes">0 B</span>
+                >Loaded latency<strong id="upload-latency">— ms</strong></span
+              ><span>Uploaded<strong id="upload-bytes">0 B</strong></span>
             </div>
-          </div>
+          </section>
         </div>
         <footer class="panel-footer">
-          <p>
-            <span class="status-dot" aria-hidden="true"></span> Tests your
-            connection to the selected server. Uses real download &amp; upload
-            data.
-          </p>
+          <p>Measures real downloads and uploads to the selected server.</p>
           <button type="button" id="copy-result" class="text-button" disabled>
             Copy results ↗
           </button>
         </footer>
       </section>
-
+      <section class="connection-panel" aria-labelledby="connection-title">
+        <header class="connection-heading">
+          <h2 id="connection-title">Your connection</h2>
+          <div class="connection-actions">
+            <button
+              type="button"
+              id="refresh-ip"
+              class="text-button"
+              aria-label="Refresh IP addresses"
+            >
+              Refresh ↻</button
+            ><button
+              type="button"
+              id="privacy"
+              class="text-button"
+              aria-pressed="false"
+            >
+              Hide IP details
+            </button>
+          </div>
+        </header>
+        <div class="connection-strip">
+          <div>
+            <p class="strip-label">Public IPv4</p>
+            <button
+              type="button"
+              id="ipv4"
+              class="ip-value"
+              aria-label="Copy IPv4 address"
+              disabled
+            >
+              Checking…
+            </button>
+          </div>
+          <div>
+            <p class="strip-label">Public IPv6</p>
+            <button
+              type="button"
+              id="ipv6"
+              class="ip-value"
+              aria-label="Copy IPv6 address"
+              disabled
+            >
+              Checking…
+            </button>
+          </div>
+          <div>
+            <p class="strip-label">Location / network</p>
+            <p id="connection-location" class="location-value">
+              Looking up your network…
+            </p>
+          </div>
+        </div>
+      </section>
+      <p class="visually-hidden" id="announcement" role="status"></p>
       <div class="tools-grid">
         <section class="tool-panel" aria-labelledby="dns-title">
           <header class="panel-header">
             <div>
-              <p class="eyebrow">02 / RESOLVE</p>
               <h2 id="dns-title">DNS lookup</h2>
             </div>
-            <span class="tool-symbol" aria-hidden="true">⌘</span>
           </header>
           <p class="tool-copy">Find the records behind a hostname.</p>
           <form id="dns-form">
@@ -255,10 +245,8 @@
         <section class="tool-panel" aria-labelledby="geo-title">
           <header class="panel-header">
             <div>
-              <p class="eyebrow">03 / LOCATE</p>
               <h2 id="geo-title">IP location</h2>
             </div>
-            <span class="tool-symbol" aria-hidden="true">◎</span>
           </header>
           <p class="tool-copy">Put a public address on the map.</p>
           <form id="geo-form">
@@ -316,10 +304,9 @@
       </details>
     </main>
     <footer class="site-footer shell">
-      <p>A little clarity for your connection.</p>
+      <p>Made by <a href="https://lsong.org">Lsong</a></p>
       <nav aria-label="Footer">
-        <a href="https://lsong.org">Made by Lsong ↗</a
-        ><a href="https://github.com/lsongdev/myip">Source</a
+        <a href="https://github.com/lsongdev/myip">Source</a
         ><a href="https://github.com/SukkaW/speed.skk.moe">Inspired by Sukka</a>
       </nav>
     </footer>

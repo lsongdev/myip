@@ -9,7 +9,7 @@ const endpoint = (path, bytes) => {
 
 export const cloudflare = {
   id: 'cloudflare',
-  name: 'Cloudflare · nearest edge',
+  name: 'Cloudflare edge',
   async ping({ signal }) {
     const url = endpoint('/__down', 0);
     const started = performance.now();
