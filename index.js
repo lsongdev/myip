@@ -1,6 +1,6 @@
 import { runSpeedtest } from './lib/speedtest.js';
-import { websites } from './providers/websites.js?v=8';
-import { mountConnectivity } from './ui/connectivity.js?v=8';
+import { websites } from './providers/websites.js?v=9';
+import { mountConnectivity } from './ui/connectivity.js?v=9';
 import { cloudflare } from './providers/cloudflare.js?v=5';
 import { buildThroughputChart } from './ui/throughput-chart.js?v=7';
 import {

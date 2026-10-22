@@ -1,4 +1,4 @@
-import { probeEndpoint } from '../lib/connectivity.js?v=8';
+import { probeEndpoint } from '../lib/connectivity.js?v=9';
 
 const site = (id, name, region, resource, icon = `${id}.ico`) => ({
   id,

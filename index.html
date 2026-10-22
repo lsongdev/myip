@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" href="assets/icon.png" />
     <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="index.css?v=8" />
-    <script type="module" src="index.js?v=8"></script>
+    <script type="module" src="index.js?v=9"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -240,7 +240,7 @@
           <p id="connectivity-status" role="status">
             Checks start when this section is in view.
           </p>
-          <p>HTTP response time · latest 12 checks</p>
+          <p>12 checks per site · HTTP response time</p>
         </footer>
       </section>
       <p class="visually-hidden" id="announcement" role="status"></p>
@@ -341,13 +341,15 @@
           </p>
           <p>
             Website connectivity uses small, direct browser HEAD requests to
-            public resources, with three attempts per check. A response confirms
-            the probe was reached; it does not verify the full website or its
-            HTTP status, which cross-origin responses may hide. Times include
-            browser and connection setup overhead and are not ICMP ping.
-            Timeouts or unavailable results can also be caused by browser
-            restrictions, extensions or the resource itself. Detection pauses
-            during a speed test. History is kept only in this tab.
+            public resources, with 12 attempts per site on each run. Each dot
+            records a response, timeout or failure. A response confirms the
+            probe was reached; it does not verify the full website or its HTTP
+            status, which cross-origin responses may hide. Times include browser
+            and connection setup overhead and are not ICMP ping. Timeouts or
+            unavailable results can also be caused by browser restrictions,
+            extensions or the resource itself. Detection pauses during a speed
+            test and stops when the tab is hidden. Starting a new check resets
+            the selected sites' dots. Results stay only in this tab.
           </p>
         </div>
       </details>

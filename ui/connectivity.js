@@ -1,6 +1,9 @@
-import { runConnectivity } from '../lib/connectivity.js?v=8';
+import {
+  CONNECTIVITY_SAMPLES,
+  runConnectivity,
+} from '../lib/connectivity.js?v=9';
 
-const HISTORY = 12;
+const HISTORY = CONNECTIVITY_SAMPLES;
 const statusText = {
   responded: 'Responded',
   timeout: 'Timed out',
@@ -64,8 +67,8 @@ export function mountConnectivity({ root, targets }) {
   const lock = (value) => {
     for (const card of cards.values()) card.button.disabled = value;
   };
-  function cancel() {
-    active?.abort();
+  function cancel(reason) {
+    active?.abort(reason);
   }
 
   async function check(selected = targets) {
@@ -77,11 +80,16 @@ export function mountConnectivity({ root, targets }) {
     lock(true);
     root.setAttribute('aria-busy', 'true');
     let finished = 0;
-    const total = selected.length * 3;
+    const total = selected.length * CONNECTIVITY_SAMPLES;
+    for (const target of selected) {
+      histories.set(target.id, []);
+      render(target.id);
+    }
     summary.textContent = `Checking 0 / ${total}…`;
     try {
       await runConnectivity({
         targets: selected,
+        samples: CONNECTIVITY_SAMPLES,
         signal: controller.signal,
         onUpdate(reading) {
           if (active !== controller || controller.signal.aborted) return;
@@ -98,12 +106,12 @@ export function mountConnectivity({ root, targets }) {
         const responded = selected.filter(
           (target) => histories.get(target.id).at(-1)?.status === 'responded',
         ).length;
-        summary.textContent = `${responded} / ${selected.length} ${selected.length === 1 ? 'site' : 'sites'} responded · just checked`;
+        summary.textContent = `${responded} / ${selected.length} ${selected.length === 1 ? 'site' : 'sites'} responded · ${CONNECTIVITY_SAMPLES} checks per site complete`;
       }
     } catch (error) {
       if (active === controller)
         summary.textContent = controller.signal.aborted
-          ? 'Check stopped.'
+          ? `Check stopped${controller.signal.reason === 'tab hidden' ? ' (tab hidden)' : ''} · ${finished} / ${total} completed.`
           : 'Could not complete the check. Try again.';
     } finally {
       if (active === controller) {
@@ -173,7 +181,7 @@ export function mountConnectivity({ root, targets }) {
       : null;
   observer?.observe(root);
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) cancel();
+    if (document.hidden) cancel('tab hidden');
   });
 
   return {

@@ -124,6 +124,37 @@ test('cancelled runs release workers and never publish failure samples after abo
   assert.equal(updates.length, count);
 });
 
+test('a default run records all 12 attempts per site, including failed probes', async () => {
+  const attempts = new Map();
+  const updates = [];
+  await runConnectivity({
+    targets: ['responded', 'timeout', 'unavailable'].map((id) => ({
+      id,
+      probe: async () => {
+        attempts.set(id, (attempts.get(id) ?? 0) + 1);
+        if (id === 'timeout')
+          throw new DOMException('Timed out', 'TimeoutError');
+        if (id === 'unavailable') throw new TypeError('Network error');
+        return 42;
+      },
+    })),
+    interval: 0,
+    onUpdate: (reading) => updates.push(reading),
+  });
+  for (const [id, count] of attempts) {
+    assert.equal(count, 12);
+    const completed = updates.filter(
+      (reading) => reading.id === id && reading.status !== 'checking',
+    );
+    assert.equal(completed.length, 12);
+    assert.ok(completed.every((reading) => reading.status === id));
+    assert.deepEqual(
+      completed.map((reading) => reading.sample),
+      Array.from({ length: 12 }, (_, index) => index),
+    );
+  }
+});
+
 test('invalid timings are unavailable rather than displayed as successful', async () => {
   const result = await runConnectivity({
     targets: [{ id: 'bad', probe: async () => NaN }],
